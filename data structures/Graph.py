@@ -1,45 +1,73 @@
+from LinkedList import LinkedList
+from Queue import Queue
+
+
+class EdgeList(LinkedList):
+    @property
+    def degree(self):
+        return self.get_length()
+
+    def __init__(self):
+        super().__init__()
+
+
 class Graph:
-    def __init__(self, V):
-        self.V = V
-        self.adj = [[] for i in range(V)]
+    def __init__(self, vertices: list, edges: list):
+        self.vertices = vertices
+        self.adjacency_list = []
 
-    # add edge to graph
-    def add_edge(self, u, v):
-        self.adj[u].append(v)
-        self.adj[v].append(u)
+        for vertex in vertices:
+            edge_list = EdgeList()
 
-    # Returns count of edge in undirected graph
-    def count_edges(self):
-        Sum = 0
+            for edge in edges:
+                if vertex == edge[0]:
+                    edge_list.prepend(edge[1])
+                if vertex == edge[1]:
+                    edge_list.prepend(edge[0])
 
-        # traverse all vertex
-        for i in range(self.V):
+            self.adjacency_list.append(edge_list)
 
-            # add all edge that are linked
-            # to the current vertex
-            Sum += len(self.adj[i])
+    def print(self):
+        for i in range(len(self.adjacency_list)):
+            print(self.vertices[i], end=": ")
+            self.adjacency_list[i].print()
 
-        return Sum // 2
+    def get_degree_of(self, vertex):
+        for i in range(len(self.vertices)):
+            if self.vertices[i] == vertex:
+                return self.adjacency_list[i].get_length()
+
+    def get_neighbors_of(self, vertex):
+        for i in range(len(self.vertices)):
+            if self.vertices[i] == vertex:
+
+                neighbors = []
+                current = self.adjacency_list[i].head
+
+                while current is not None:
+                    neighbors.append(current.data)
+                    current = current.next
+                return neighbors
+
+    def bfs(self, root):
+        tree = 1
+        queue = Queue().enqueue(root)
 
 
-if __name__ == '__main__':
+v = [0, 1, 2, 3, 4, 5, "A"]
+e = [
+    [0, 1],
+    [1, 2],
+    [2, 3],
+    [3, 4],
+    [4, 5],
+    [5, 0],
+    [0, 3]
+]
 
-    V = 9
-    g = Graph(V)
+g = Graph(v, e)
+g.print()
 
-    g.add_edge(0, 1)
-    g.add_edge(0, 7)
-    g.add_edge(1, 2)
-    g.add_edge(1, 7)
-    g.add_edge(2, 3)
-    g.add_edge(2, 8)
-    g.add_edge(2, 5)
-    g.add_edge(3, 4)
-    g.add_edge(3, 5)
-    g.add_edge(4, 5)
-    g.add_edge(5, 6)
-    g.add_edge(6, 7)
-    g.add_edge(6, 8)
-    g.add_edge(7, 8)
-
-    print(g.count_edges())
+print(g.get_degree_of(2))
+print(g.get_neighbors_of(0))
+g.bfs(g.n)

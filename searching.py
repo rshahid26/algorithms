@@ -1,5 +1,4 @@
 import math
-from sorting import selection_sort
 
 
 def binary_search(list, target):
@@ -22,7 +21,7 @@ def binary_search(list, target):
     return -1
 
 
-# Knuth-Morris-Pratt algorithm for pattern matching strings
+# Knuth-Morris-Pratt algorithm for pattern matching strings in O(n) vs O(nm) time.
 # noinspection PyPep8Naming
 def kmp_search(text, pattern):
     M = len(pattern)
