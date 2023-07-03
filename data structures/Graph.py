@@ -91,7 +91,7 @@ class Graph:
         # Order in which adjacency lists are exhausted
         history = []
 
-        while stack.size() != 0:
+        while stack.size != 0:
             vertex = stack.pop()
             current = self.adjacency_list[vertex].head
 
@@ -100,8 +100,6 @@ class Graph:
                     if not processed[current.data]:
                         stack.push(current.data)
                         self.parents[current.data] = vertex
-                    elif self.parents[vertex] != current.data and self.parents[vertex] != -1:
-                        print(self.get_path(vertex, current.data))
                     current = current.next
                 history.append(vertex)
                 processed[vertex] = True
@@ -171,7 +169,6 @@ class Graph:
             if not discovered[v]:
                 history = self.bfs(v)
                 components += 1
-
                 for found_vertex in history:
                     discovered[found_vertex] = True if \
                         not discovered[found_vertex] else None
@@ -182,31 +179,73 @@ class Graph:
         """Returns number of cycles using first betti number formula"""
         return len(self.edges) - len(self.vertices) + self.num_components()
 
-    def get_cycles(self):
-        return None
+    def get_back_edges(self, root_vertex: int) -> list:
+        stack = Stack()
+        stack.push(root_vertex)
+        processed = [False] * len(self.vertices)
+        self.parents = [-1 for _ in range(len(self.vertices))]
+        back_edges = []
+
+        while stack.size != 0:
+            vertex = stack.pop()
+            current = self.adjacency_list[vertex].head
+
+            if not processed[vertex]:
+                while current is not None:
+                    if not processed[current.data]:
+                        stack.push(current.data)
+                        self.parents[current.data] = vertex
+                    elif self.parents[vertex] != current.data and self.parents[vertex] != -1:
+                        back_edges.append([vertex, current.data])
+                    current = current.next
+
+            processed[vertex] = True
+        return back_edges
+
+    def get_forward_edges(self, root_vertex: int) -> list:
+        forward_edges = self.edges.copy()
+        back_edges = self.get_back_edges(root_vertex)
+        print("backs:", back_edges)
+        for back_edge in back_edges:
+            for edge in forward_edges:
+
+                if set(back_edge) == set(edge):
+                    forward_edges.remove(edge)
+
+        return forward_edges
+
+    def get_cycles(self, root=None) -> set:
+        if root is None:
+            back_edges = self.get_back_edges(self.vertices[0])
+        else:
+            back_edges = self.get_back_edges(root)
+
+        cycles = set()
+        for edge in back_edges:
+            cycle = self.get_dfs_path(edge[1], edge[0])
+            cycle.extend(edge[1:])
+
+            cycles.add(tuple(cycle))
+        return cycles
 
     def get_articulations(self):
         return None
 
-    @property
-    def back_edges(self) -> list:
-        return self.back_edges
 
-
-v = [0, 1, 2, 3, 4, 5, 6]
+v = [0, 1, 2, 3, 4, 5, 6, 7]
 e = [
     [0, 1],
     [1, 2],
     [2, 3],
     [3, 4],
     [4, 5],
-    [5, 0],
-    [0, 3],
+    [5, 0],  # back edge
+    [0, 3],  # back edge
     [5, 6],
+    [6, 7],
+    [7, 3]   # back edge
 ]
 
 g = Graph(v, e)
 g.print()
-g.dfs(0)
-print("""_________""")
-
+print(g.get_forward_edges(0))

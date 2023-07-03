@@ -14,5 +14,6 @@ class Stack:
     def is_empty(self):
         return len(self.stack) == 0
 
-    def size(self):
+    @property
+    def size(self) -> int:
         return len(self.stack)
