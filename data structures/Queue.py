@@ -17,8 +17,15 @@ class Queue:
         else:
             raise IndexError("Queue is empty.")
 
+    def back(self):
+        if not self.is_empty():
+            return self.queue[len(self.queue) - 1]
+        else:
+            raise IndexError("Queue is empty.")
+
     def is_empty(self):
         return len(self.queue) == 0
 
-    def size(self):
+    @property
+    def size(self) -> int:
         return len(self.queue)
