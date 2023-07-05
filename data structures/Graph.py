@@ -18,9 +18,9 @@ class Graph:
         self.edges = edges
         self.adjacency_list = []
         self.parents = []
-        self._create_adjacency_list()
+        self._set_adjacency_list()
 
-    def _create_adjacency_list(self):
+    def _set_adjacency_list(self):
         for vertex in self.vertices:
             edge_list = EdgeList()
 
@@ -107,8 +107,9 @@ class Graph:
 
     def _recursive_dfs(self, root_vertex: int, marked: list = None, history: list = None):
         # Initialize marked and history matrices non-recursively
-        marked = list(False for _ in self.vertices) if marked is None else marked
-        history = [root_vertex] if history is None else history
+        if history is None:
+            marked = list(False for _ in self.vertices)
+            history = [root_vertex]
 
         marked[root_vertex] = True
         current = self.adjacency_list[root_vertex].head
@@ -187,6 +188,7 @@ class Graph:
         back_edges = []
 
         while stack.size != 0:
+            print(stack.stack)
             vertex = stack.pop()
             current = self.adjacency_list[vertex].head
 
@@ -195,24 +197,24 @@ class Graph:
                     if not processed[current.data]:
                         stack.push(current.data)
                         self.parents[current.data] = vertex
-                    elif self.parents[vertex] != current.data and self.parents[vertex] != -1:
+                    # back edges lead to already processed vertices
+                    elif self.parents[vertex] != current.data:
                         back_edges.append([vertex, current.data])
                     current = current.next
 
             processed[vertex] = True
         return back_edges
 
-    def get_forward_edges(self, root_vertex: int) -> list:
-        forward_edges = self.edges.copy()
+    def get_tree_edges(self, root_vertex: int) -> list:
+        tree_edges = self.edges.copy()
         back_edges = self.get_back_edges(root_vertex)
-        print("backs:", back_edges)
         for back_edge in back_edges:
-            for edge in forward_edges:
+            for edge in tree_edges:
 
                 if set(back_edge) == set(edge):
-                    forward_edges.remove(edge)
+                    tree_edges.remove(edge)
 
-        return forward_edges
+        return tree_edges
 
     def get_cycles(self, root=None) -> set:
         if root is None:
@@ -228,24 +230,16 @@ class Graph:
             cycles.add(tuple(cycle))
         return cycles
 
-    def get_articulations(self):
-        return None
 
-
-v = [0, 1, 2, 3, 4, 5, 6, 7]
+v = [0, 1, 2, 3, 4]
 e = [
     [0, 1],
     [1, 2],
-    [2, 3],
-    [3, 4],
-    [4, 5],
-    [5, 0],  # back edge
-    [0, 3],  # back edge
-    [5, 6],
-    [6, 7],
-    [7, 3]   # back edge
+    [0, 3],
+    [3, 2],
+    [3, 4]
 ]
 
-g = Graph(v, e)
-g.print()
-print(g.get_forward_edges(0))
+# g = Graph(v, e)
+# g.print()
+# print(g.get_cycles(0))
