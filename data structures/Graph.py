@@ -227,7 +227,7 @@ class Graph:
             cycle = self.get_dfs_path(edge[1], edge[0])
             cycle.extend(edge[1:])
 
-            cycles.add(tuple(cycle))
+            cycles.add(tuple(cycle))  # immutable so we save on space/time
         return cycles
 
 

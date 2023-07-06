@@ -39,25 +39,32 @@ class DirectedGraph(Graph):
                 history.append(current.data)
                 self.parents[current.data] = root_vertex
                 self._recursive_dfs(current.data, marked, history)
+
             self._classify_edge(root_vertex, current.data, marked)
             current = current.next
 
+        marked[root_vertex] = "processed"
         self._timer += 1
         self._time[root_vertex]["exit"] = self._timer
         return history if len(history) == len(self.vertices) else marked
 
-    def _classify_edge(self, parent_vertex, vertex, marked):
-        if self.parents[vertex] == parent_vertex:
-            self.edge_class["tree"].append([parent_vertex, vertex])
+    def _classify_edge(self, source, target, marked):
+        if source == 4:
+            print(target, marked[target])
+        if self.parents[target] == source:
+            self.edge_class["tree"].append([source, target])
 
-        elif marked[vertex] == "discovered" and not marked[vertex] == "processed":
-            self.edge_class["back"].append([parent_vertex, vertex])
+        elif marked[target] == "discovered" and not marked[target] == "processed":
+            self.edge_class["back"].append([source, target])
 
-        elif marked[vertex] == "processed" and (self._time[vertex]["entry"] > self._time[parent_vertex]["entry"]):
-            self.edge_class["forward"].append([parent_vertex, vertex])
+        elif marked[target] == "processed" and (self._time[target]["entry"] > self._time[source]["entry"]):
+            self.edge_class["forward"].append([source, target])
 
-        elif marked[vertex] == "processed" and (self._time[vertex]["entry"] < self._time[parent_vertex]["entry"]):
-            self.edge_class["cross"].append([vertex, vertex])
+        elif marked[target] == "processed" and (self._time[target]["entry"] < self._time[source]["entry"]):
+            self.edge_class["cross"].append([source, target])
+
+    def _get_time(self, vertex):
+        return [self._time[vertex]["entry"], self._time[vertex]["exit"]]
 
     def _set_adjacency_list(self):
         for vertex in self.vertices:
@@ -78,15 +85,13 @@ class DirectedGraph(Graph):
 
 v = [0, 1, 2, 3, 4]
 e = [
+    [0, 3],
     [0, 1],
     [1, 2],
-    [0, 3],
     [3, 2],
     [3, 4],
-    [4, 0]
 ]
 
 g = DirectedGraph(v, e)
 g.print()
 print(g.dfs(0))
-print(g.edge_class)
