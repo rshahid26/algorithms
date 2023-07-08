@@ -1,34 +1,47 @@
-from LinkedList import LinkedList
 from Queue import Queue
 from Stack import Stack
-
-
-class EdgeList(LinkedList):
-    @property
-    def degree(self):
-        return self.get_length()
-
-    def __init__(self):
-        super().__init__()
+from WeightedEdgeList import WeightedEdgeList
 
 
 class Graph:
     def __init__(self, vertices: list, edges: list):
-        self.vertices = vertices
-        self.edges = edges
+        self.vertices = []
+        self.vertex_weights = []
+        self._set_vertices(vertices)
+
+        self.edges = []
+        self.edge_weights = []
+        self._set_edges(edges)
+
         self.adjacency_list = []
         self.parents = []
         self._set_adjacency_list()
 
+    def _set_vertices(self, vertices: list):
+        for vertex in vertices:
+            if len(vertex) == 2:
+                self.vertices.append(vertex[0])
+                self.vertex_weights.append(vertex[1])
+            else:
+                raise TypeError("Pass in weights for all vertices")
+
+    def _set_edges(self, edges: list):
+        for edge in edges:
+            if len(edge[0]) == 2:
+                self.edges.append(edge[0])
+                self.edge_weights.append(edge[1])
+            else:
+                raise TypeError("Pass in weights for all edges")
+
     def _set_adjacency_list(self):
         for vertex in self.vertices:
-            edge_list = EdgeList()
+            edge_list = WeightedEdgeList()
 
-            for edge in self.edges:
-                if vertex == edge[0]:
-                    edge_list.prepend(edge[1])
-                if vertex == edge[1]:
-                    edge_list.prepend(edge[0])
+            for e in range(len(self.edges)):
+                if vertex == self.edges[e][0]:
+                    edge_list.prepend(self.edges[e][1], self.edge_weights[e])
+                if vertex == self.edges[e][1]:
+                    edge_list.prepend(self.edges[e][0], self.edge_weights[e])
 
             self.adjacency_list.append(edge_list)
 
@@ -36,6 +49,11 @@ class Graph:
         for i in range(len(self.adjacency_list)):
             print(self.vertices[i], end=": ")
             self.adjacency_list[i].print()
+
+    def print_weights(self):
+        for i in range(len(self.adjacency_list)):
+            print(self.vertices[i], end=": ")
+            self.adjacency_list[i].print_weights()
 
     def get_degree_of(self, vertex):
         for i in range(len(self.vertices)):
@@ -101,8 +119,9 @@ class Graph:
                         stack.push(current.data)
                         self.parents[current.data] = vertex
                     current = current.next
-                history.append(vertex)
+
                 processed[vertex] = True
+                history.append(vertex)
         return history
 
     def _recursive_dfs(self, root_vertex: int, marked: list = None, history: list = None):
@@ -138,13 +157,13 @@ class Graph:
 
     def get_path(self, source: int, target: int):
         self.bfs(source)
-        return self._find_path(source, target)
+        return self.__find_path(source, target)
 
     def get_dfs_path(self, source: int, target: int):
         self.dfs(source)
-        return self._find_path(source, target)
+        return self.__find_path(source, target)
 
-    def _find_path(self, source: int, target: int):
+    def __find_path(self, source: int, target: int):
         path = [target]
         while self.parents[target] != source:
             if self.parents[target] == -1:
@@ -158,11 +177,11 @@ class Graph:
         path.append(source)
         return path[::-1]
 
-    def is_connected(self):
+    def is_connected(self) -> bool:
         component = self.bfs(self.vertices[0])
         return len(component) == len(self.vertices)
 
-    def num_components(self):
+    def num_components(self) -> int:
         discovered = [False] * len(self.vertices)
         components = 0
 
@@ -188,7 +207,6 @@ class Graph:
         back_edges = []
 
         while stack.size != 0:
-            print(stack.stack)
             vertex = stack.pop()
             current = self.adjacency_list[vertex].head
 
@@ -230,16 +248,12 @@ class Graph:
             cycles.add(tuple(cycle))  # immutable so we save on space/time
         return cycles
 
-
-v = [0, 1, 2, 3, 4]
-e = [
-    [0, 1],
-    [1, 2],
-    [0, 3],
-    [3, 2],
-    [3, 4]
-]
-
-# g = Graph(v, e)
-# g.print()
-# print(g.get_cycles(0))
+#
+# v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
+# e = [
+#     [[0, 1], 0],
+#     [[1, 2], 2],
+#     [[0, 3], 0],
+#     [[3, 2], 0],
+#     [[3, 4], 0]
+# ]

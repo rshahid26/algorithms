@@ -1,6 +1,5 @@
 from Graph import Graph
-from Graph import EdgeList
-
+from WeightedEdgeList import WeightedEdgeList
 
 class DirectedGraph(Graph):
 
@@ -18,14 +17,25 @@ class DirectedGraph(Graph):
             "exit": -1
         } for _ in range(len(self.vertices))]
 
+    def _set_adjacency_list(self):
+        for vertex in self.vertices:
+            edge_list = WeightedEdgeList()
+
+            for e in range(len(self.edges)):
+                if vertex == self.edges[e][0]:
+                    edge_list.prepend(self.edges[e][1], self.edge_weights[e])
+
+            self.adjacency_list.append(edge_list)
+
     def dfs(self, root_vertex):
         return self._recursive_dfs(root_vertex)
 
     def _recursive_dfs(self, root_vertex: int, marked: list = None, history: list = None):
+        """the returned list history has a different meaning here than in super"""
         # Initialize marked and history matrices non-recursively
         if history is None:
             marked = list(False for _ in self.vertices)
-            history = [root_vertex]
+            history = [] # Order vertices are processed. reverse of top_sort if graph is a DAG
             self.parents = [-1] * len(self.vertices)
             self._timer = 0
 
@@ -36,7 +46,6 @@ class DirectedGraph(Graph):
         current = self.adjacency_list[root_vertex].head
         while current is not None:
             if not marked[current.data]:
-                history.append(current.data)
                 self.parents[current.data] = root_vertex
                 self._recursive_dfs(current.data, marked, history)
 
@@ -44,13 +53,12 @@ class DirectedGraph(Graph):
             current = current.next
 
         marked[root_vertex] = "processed"
+        history.append(root_vertex)
         self._timer += 1
         self._time[root_vertex]["exit"] = self._timer
         return history if len(history) == len(self.vertices) else marked
 
     def _classify_edge(self, source, target, marked):
-        if source == 4:
-            print(target, marked[target])
         if self.parents[target] == source:
             self.edge_class["tree"].append([source, target])
 
@@ -66,32 +74,56 @@ class DirectedGraph(Graph):
     def _get_time(self, vertex):
         return [self._time[vertex]["entry"], self._time[vertex]["exit"]]
 
-    def _set_adjacency_list(self):
-        for vertex in self.vertices:
-            edge_list = EdgeList()
+    def num_distinct_cycles(self):
+        return len(self.edge_class["back"] + self.edge_class["forward"] + self.edge_class["cross"])
 
-            for edge in self.edges:
-                if vertex == edge[0]:
-                    edge_list.prepend(edge[1])
+    def top_sort(self, root_vertex: int = None) -> list:
+        if root_vertex is None:
+            root_vertex = self.get_root_vertex()  # top_sort DNE if raises error
 
-            self.adjacency_list.append(edge_list)
+        history = self.dfs(root_vertex)
+        history.reverse()
+        return history if self.num_distinct_cycles() > 0 else None
 
-    def top_sort(self):
-        return None
+    def get_root_vertex(self) -> int:
+        """Returns the first vertex found with no parents"""
+        is_child = [False] * len(self.vertices)
+        for vertex in self.adjacency_list:
+            current = vertex.head
+
+            while current is not None:
+                is_child[current.data] = True
+                current = current.next
+
+        for i in range(len(is_child)):
+            if not is_child[i]:
+                return i
+        raise AssertionError("Every vertex in this graph has a parent.")
+
+    def get_edge_transpose(self):
+        edge_transpose = self.edges.copy()
+        for i in range(len(self.edges)):
+            # Flip the direction of every edge
+            edge_transpose[i] = [self.edges[i][1], self.edges[i][0]]
+
+        return edge_transpose
+
+    def get_transpose(self):
+        return DirectedGraph(self.vertices, self.get_edge_transpose())
 
     def prim(self):
         return None
 
 
-v = [0, 1, 2, 3, 4]
-e = [
-    [0, 3],
-    [0, 1],
-    [1, 2],
-    [3, 2],
-    [3, 4],
+v_set = [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]
+e_set = [
+    [[0, 1], 0],
+    [[1, 2], 0],
+    [[0, 3], 3],
+    [[3, 2], 0],
+    [[3, 4], 0]
 ]
 
-g = DirectedGraph(v, e)
-g.print()
-print(g.dfs(0))
+g = DirectedGraph(v_set, e_set)
+g.dfs(0)
+print(g.top_sort())
