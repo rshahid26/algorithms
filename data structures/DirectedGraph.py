@@ -1,6 +1,7 @@
 from Graph import Graph
 from WeightedEdgeList import WeightedEdgeList
 
+
 class DirectedGraph(Graph):
 
     def __init__(self, vertices: list, edges: list):
@@ -111,19 +112,18 @@ class DirectedGraph(Graph):
     def get_transpose(self):
         return DirectedGraph(self.vertices, self.get_edge_transpose())
 
-    def prim(self):
-        return None
+    def minimum_spanning_tree(self, vertex: int = None):
+        return DirectedGraph(self.vertices, self.minimum_spanning_edges(vertex))
 
 
 v_set = [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]
 e_set = [
-    [[0, 1], 0],
-    [[1, 2], 0],
-    [[0, 3], 3],
-    [[3, 2], 0],
-    [[3, 4], 0]
+    [[0, 1], 8],
+    [[0, 2], 6],
+    [[2, 3], 9],
+    [[4, 2], 4],
+    [[3, 4], 5]
 ]
 
 g = DirectedGraph(v_set, e_set)
-g.dfs(0)
-print(g.top_sort())
+print(g.minimum_spanning_edges())

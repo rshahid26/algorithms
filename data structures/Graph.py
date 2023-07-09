@@ -141,7 +141,7 @@ class Graph:
 
         return history if len(history) == len(self.vertices) else marked
 
-    def _recursive_get_path(self, source: int, target: int, path: list = None) -> list:
+    def _recursive_get_shortest_path(self, source: int, target: int, path: list = None) -> list:
         """Returns an array of vertices that go from source vertex to target vertex"""
         if path is None:
             self.bfs(source)
@@ -153,9 +153,9 @@ class Graph:
         if self.parents[target] == source:
             return path[::-1]
         else:
-            return self._recursive_get_path(source, self.parents[target], path)
+            return self._recursive_get_shortest_path(source, self.parents[target], path)
 
-    def get_path(self, source: int, target: int):
+    def get_shortest_path(self, source: int, target: int):
         self.bfs(source)
         return self.__find_path(source, target)
 
@@ -176,6 +176,20 @@ class Graph:
 
         path.append(source)
         return path[::-1]
+
+    def get_edge_weight(self, path: list) -> int:
+        weight = 0
+        for i in range(len(path) - 1):
+
+            current = self.adjacency_list[i].head
+            while current is not None:
+                if current.data == path[i + 1]:
+                    weight += current.weight
+                    break
+                current = current.next
+            if current is None:
+                raise ReferenceError("Path does not exist")
+        return weight
 
     def is_connected(self) -> bool:
         component = self.bfs(self.vertices[0])
@@ -247,6 +261,46 @@ class Graph:
 
             cycles.add(tuple(cycle))  # immutable so we save on space/time
         return cycles
+
+    def minimum_spanning_edges(self, vertex: int = None) -> list:
+        """Implements Prim's algorithm for constructing MSTs. Assumes connected graph"""
+        vertex_set = [self.vertices[0] if vertex is None else vertex]
+        processed = [False] * len(self.vertices)
+        processed[vertex_set[0]] = True
+
+        minimum_edge = []
+        MSE = []
+        while len(vertex_set) != len(self.vertices):
+            minimum_weight = float('inf')
+
+            for i in vertex_set:
+                current = self.adjacency_list[i].head
+                while current is not None:
+                    if current.weight < minimum_weight and not processed[current.data]:
+                        minimum_edge = [i, current.data]
+                        minimum_weight = current.weight
+                    current = current.next
+
+            MSE.append([minimum_edge, minimum_weight])
+            vertex_set.append(minimum_edge[1])
+            processed[minimum_edge[1]] = True
+        return MSE
+
+    def minimum_spanning_tree(self, vertex: int = None):
+        return Graph(self.vertices, self.minimum_spanning_edges(vertex))
+
+
+v_set = [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]
+e_set = [
+    [[0, 1], 8],
+    [[0, 2], 6],
+    [[2, 3], 9],
+    [[2, 4], 4],
+    [[3, 4], 5]
+]
+
+g = Graph(v_set, e_set)
+print(g.minimum_spanning_edges())
 
 #
 # v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
