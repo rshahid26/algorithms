@@ -34,16 +34,13 @@ class Graph:
                 raise TypeError("Pass in weights for all edges")
 
     def _set_adjacency_list(self):
-        for vertex in self.vertices:
-            edge_list = WeightedEdgeList()
+        for _ in self.vertices:
+            self.adjacency_list.append(WeightedEdgeList())
 
-            for e in range(len(self.edges)):
-                if vertex == self.edges[e][0]:
-                    edge_list.prepend(self.edges[e][1], self.edge_weights[e])
-                if vertex == self.edges[e][1]:
-                    edge_list.prepend(self.edges[e][0], self.edge_weights[e])
-
-            self.adjacency_list.append(edge_list)
+        for e in range(len(self.edges)):
+            (v1, v2) = (self.edges[e][0], self.edges[e][1])
+            self.adjacency_list[v1].prepend(v2, self.edge_weights[e])
+            self.adjacency_list[v2].prepend(v1, self.edge_weights[e])
 
     def print(self):
         for i in range(len(self.adjacency_list)):
@@ -287,7 +284,44 @@ class Graph:
         return MSE
 
     def minimum_spanning_tree(self, vertex: int = None):
-        return Graph(self.vertices, self.minimum_spanning_edges(vertex))
+        # Returns the minimum spanning edges as an object of the Graph class
+        return Graph(self._vertex_set(), self.minimum_spanning_edges(vertex))
+
+    def _vertex_set(self):
+        # Reconstructs vertex argument passed into Graph class
+        vertex_set = [1] * len(self.vertices)
+        for vertex in self.vertices:
+            # Place vertices next to their vertex weights again
+            vertex_set[vertex] = [self.vertices[vertex], self.vertex_weights[vertex]]
+        return vertex_set
+
+    def _sort_edges(self):
+        edges = self.edges.copy()
+        weights = self.edge_weights.copy()
+        for i in range(len(edges)):
+            for j in range(i, len(edges), 1):
+                # Assumes edge and edge_weight index is unchanged since initializing
+                if weights[j] < weights[i]:
+                    weights[i], weights[j] = weights[j], weights[i]
+                    edges[i], edges[j] = edges[j], edges[i]
+        return edges
+
+    def kruskal(self):
+        sorted_edges = self._sort_edges()
+        spanning_trees = [[False] * len(self.vertices)] * len(self.vertices)
+        MSE = []
+
+        while len(MSE) < len(self.vertices) - 1:
+            edge = sorted_edges.pop(0)
+            if not spanning_trees[edge[0]][edge[1]]:
+                MSE.append(edge)
+                for i in range(len(self.vertices)):
+                    # Combine the trees
+                    if spanning_trees[edge[0]][i]:
+                        spanning_trees[edge[1]][i] = True
+                    if spanning_trees[edge[1]][i]:
+                        spanning_trees[edge[0]][i] = True
+        return MSE
 
 
 v_set = [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]
@@ -300,8 +334,7 @@ e_set = [
 ]
 
 g = Graph(v_set, e_set)
-print(g.minimum_spanning_edges())
-
+g.print_weights()
 #
 # v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
 # e = [

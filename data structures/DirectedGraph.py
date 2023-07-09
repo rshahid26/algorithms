@@ -19,14 +19,12 @@ class DirectedGraph(Graph):
         } for _ in range(len(self.vertices))]
 
     def _set_adjacency_list(self):
-        for vertex in self.vertices:
-            edge_list = WeightedEdgeList()
+        for _ in self.vertices:
+            self.adjacency_list.append(WeightedEdgeList())
 
-            for e in range(len(self.edges)):
-                if vertex == self.edges[e][0]:
-                    edge_list.prepend(self.edges[e][1], self.edge_weights[e])
-
-            self.adjacency_list.append(edge_list)
+        for e in range(len(self.edges)):
+            (v1, v2) = (self.edges[e][0], self.edges[e][1])
+            self.adjacency_list[v1].prepend(v2, self.edge_weights[e])
 
     def dfs(self, root_vertex):
         return self._recursive_dfs(root_vertex)
@@ -113,7 +111,7 @@ class DirectedGraph(Graph):
         return DirectedGraph(self.vertices, self.get_edge_transpose())
 
     def minimum_spanning_tree(self, vertex: int = None):
-        return DirectedGraph(self.vertices, self.minimum_spanning_edges(vertex))
+        return DirectedGraph(self._vertex_set(), self.minimum_spanning_edges(vertex))
 
 
 v_set = [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]
@@ -121,9 +119,9 @@ e_set = [
     [[0, 1], 8],
     [[0, 2], 6],
     [[2, 3], 9],
-    [[4, 2], 4],
-    [[3, 4], 5]
+    [[2, 4], 4],
+    [[4, 3], 5]
 ]
 
 g = DirectedGraph(v_set, e_set)
-print(g.minimum_spanning_edges())
+print(g.minimum_spanning_tree().edges)
