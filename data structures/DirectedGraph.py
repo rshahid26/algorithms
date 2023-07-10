@@ -24,6 +24,7 @@ class DirectedGraph(Graph):
 
         for e in range(len(self.edges)):
             (v1, v2) = (self.edges[e][0], self.edges[e][1])
+            # Edges are only added to the adjacency list in the v1 -> v2 direction
             self.adjacency_list[v1].prepend(v2, self.edge_weights[e])
 
     def dfs(self, root_vertex):
@@ -72,6 +73,14 @@ class DirectedGraph(Graph):
 
     def _get_time(self, vertex):
         return [self._time[vertex]["entry"], self._time[vertex]["exit"]]
+
+    def get_back_edges(self, root_vertex: int) -> list:
+        """Override undirected back edges method"""
+        return self.edge_class["back"]
+
+    def get_tree_edges(self, root_vertex: int) -> list:
+        """Override undirected tree edges method"""
+        return self.edge_class["tree"]
 
     def num_distinct_cycles(self):
         return len(self.edge_class["back"] + self.edge_class["forward"] + self.edge_class["cross"])

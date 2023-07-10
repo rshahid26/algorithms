@@ -39,6 +39,7 @@ class Graph:
 
         for e in range(len(self.edges)):
             (v1, v2) = (self.edges[e][0], self.edges[e][1])
+            # Add edges in the v1 -> v2 and v2 -> v1 directions
             self.adjacency_list[v1].prepend(v2, self.edge_weights[e])
             self.adjacency_list[v2].prepend(v1, self.edge_weights[e])
 
