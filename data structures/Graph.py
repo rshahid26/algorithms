@@ -19,7 +19,10 @@ class Graph:
 
     def _set_vertices(self, vertices: list):
         for vertex in vertices:
-            if len(vertex) == 2:
+            if type(vertex) == int:
+                self.vertices.append(vertex)
+                self.vertex_weights.append(0)
+            elif len(vertex) == 2:
                 self.vertices.append(vertex[0])
                 self.vertex_weights.append(vertex[1])
             else:
@@ -27,7 +30,10 @@ class Graph:
 
     def _set_edges(self, edges: list):
         for edge in edges:
-            if len(edge[0]) == 2:
+            if type(edge[0]) == int:
+                self.edges.append(edge)
+                self.edge_weights.append(0)
+            elif len(edge[0]) == 2:
                 self.edges.append(edge[0])
                 self.edge_weights.append(edge[1])
             else:
@@ -43,12 +49,12 @@ class Graph:
             self.adjacency_list[v1].prepend(v2, self.edge_weights[e])
             self.adjacency_list[v2].prepend(v1, self.edge_weights[e])
 
-    def print(self):
+    def print_adj(self):
         for i in range(len(self.adjacency_list)):
             print(self.vertices[i], end=": ")
             self.adjacency_list[i].print()
 
-    def print_weights(self):
+    def print_adj_weights(self):
         for i in range(len(self.adjacency_list)):
             print(self.vertices[i], end=": ")
             self.adjacency_list[i].print_weights()
@@ -325,17 +331,17 @@ class Graph:
         return MSE
 
 
-v_set = [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]
+v_set = [0, 1, 2, 3, 4]
 e_set = [
-    [[0, 1], 8],
-    [[0, 2], 6],
-    [[2, 3], 9],
-    [[2, 4], 4],
-    [[3, 4], 5]
+    [0, 1],
+    [0, 2],
+    [2, 3],
+    [2, 4],
+    [3, 4]
 ]
 
 g = Graph(v_set, e_set)
-g.print_weights()
+g.print_adj_weights()
 #
 # v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
 # e = [

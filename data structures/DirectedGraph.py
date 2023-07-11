@@ -123,14 +123,16 @@ class DirectedGraph(Graph):
         return DirectedGraph(self._vertex_set(), self.minimum_spanning_edges(vertex))
 
 
-v_set = [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]
+v_set = [0, 1, 2, 3, 4]
 e_set = [
-    [[0, 1], 8],
-    [[0, 2], 6],
-    [[2, 3], 9],
-    [[2, 4], 4],
-    [[4, 3], 5]
+    [0, 1],
+    [0, 2],
+    [2, 3],
+    [2, 4],
+    [4, 3]
 ]
 
 g = DirectedGraph(v_set, e_set)
+print(g.vertex_weights)
+print(g.edge_weights)
 print(g.minimum_spanning_tree().edges)
