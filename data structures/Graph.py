@@ -4,50 +4,46 @@ from WeightedEdgeList import WeightedEdgeList
 
 
 class Graph:
-    def __init__(self, vertices: list, edges: list):
+    def __init__(self, vertices: list = None, edges: list = None):
         self.vertices = []
         self.vertex_weights = []
-        self._set_vertices(vertices)
 
         self.edges = []
         self.edge_weights = []
-        self._set_edges(edges)
-
         self.adjacency_list = []
         self.parents = []
-        self._set_adjacency_list()
+        try:
+            for vertex in vertices:
+                self.add_vertex(vertex)
+            for edge in edges:
+                self.add_edge(edge)
+        except TypeError:
+            pass  # Initialized with no elements.
 
-    def _set_vertices(self, vertices: list):
-        for vertex in vertices:
-            if type(vertex) == int:
-                self.vertices.append(vertex)
-                self.vertex_weights.append(0)
-            elif len(vertex) == 2:
-                self.vertices.append(vertex[0])
-                self.vertex_weights.append(vertex[1])
-            else:
-                raise TypeError("Pass in weights for all vertices")
+    def add_vertex(self, vertex_):
+        # Vertices can be entered as either an integer or [vertex, weight]
+        vertex = vertex_ if type(vertex_) == int else vertex_[0]
+        weight = 0 if type(vertex_) == int else vertex_[1]
 
-    def _set_edges(self, edges: list):
-        for edge in edges:
-            if type(edge[0]) == int:
-                self.edges.append(edge)
-                self.edge_weights.append(0)
-            elif len(edge[0]) == 2:
-                self.edges.append(edge[0])
-                self.edge_weights.append(edge[1])
-            else:
-                raise TypeError("Pass in weights for all edges")
+        self.vertices.append(vertex)
+        self.vertex_weights.append(weight)
+        self.adjacency_list.append(WeightedEdgeList())
 
-    def _set_adjacency_list(self):
-        for _ in self.vertices:
-            self.adjacency_list.append(WeightedEdgeList())
+    def add_edge(self, edge_):
+        edge, weight = self._parse_edge(edge_)
+        self.edges.append(edge)
+        self.edge_weights.append(edge)
 
-        for e in range(len(self.edges)):
-            (v1, v2) = (self.edges[e][0], self.edges[e][1])
-            # Add edges in the v1 -> v2 and v2 -> v1 directions
-            self.adjacency_list[v1].prepend(v2, self.edge_weights[e])
-            self.adjacency_list[v2].prepend(v1, self.edge_weights[e])
+        # Add edges in the v1 -> v2 and v2 -> v1 directions
+        self.adjacency_list[edge[0]].prepend(edge[1], weight)
+        self.adjacency_list[edge[1]].prepend(edge[0], weight)
+
+    @staticmethod
+    def _parse_edge(edge_) -> tuple:
+        # Edges can be entered as either [source_v, target_v] or [[source_v, target_v], weight]
+        edge = edge_ if type(edge_[0]) == int else edge_[0]
+        weight = 0 if type(edge_[0]) == int else edge_[1]
+        return edge, weight
 
     def print_adj(self):
         for i in range(len(self.adjacency_list)):
@@ -330,18 +326,24 @@ class Graph:
                         spanning_trees[edge[0]][i] = True
         return MSE
 
+#
+# v_set = [0, 1, 2, 3, 4]
+# e_set = [
+#     [0, 1],
+#     [0, 2],
+#     [2, 3],
+#     [2, 4],
+#     [3, 4]
+# ]
+#
+# g = Graph(v_set, e_set)
+# g.add_vertex([5, 0])
+# g.add_edge([5, 1])
+#
+# g.print_adj()
+# print()
+# g.print_adj_weights()
 
-v_set = [0, 1, 2, 3, 4]
-e_set = [
-    [0, 1],
-    [0, 2],
-    [2, 3],
-    [2, 4],
-    [3, 4]
-]
-
-g = Graph(v_set, e_set)
-g.print_adj_weights()
 #
 # v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
 # e = [

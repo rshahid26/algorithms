@@ -1,5 +1,4 @@
 from Graph import Graph
-from WeightedEdgeList import WeightedEdgeList
 
 
 class DirectedGraph(Graph):
@@ -18,14 +17,13 @@ class DirectedGraph(Graph):
             "exit": -1
         } for _ in range(len(self.vertices))]
 
-    def _set_adjacency_list(self):
-        for _ in self.vertices:
-            self.adjacency_list.append(WeightedEdgeList())
+    def add_edge(self, edge_):
+        edge, weight = self._parse_edge(edge_)
+        self.edges.append(edge)
+        self.edge_weights.append(weight)
 
-        for e in range(len(self.edges)):
-            (v1, v2) = (self.edges[e][0], self.edges[e][1])
-            # Edges are only added to the adjacency list in the v1 -> v2 direction
-            self.adjacency_list[v1].prepend(v2, self.edge_weights[e])
+        # Add edges in the v1 -> v2 direction only
+        self.adjacency_list[edge[0]].prepend(edge[1], weight)
 
     def dfs(self, root_vertex):
         return self._recursive_dfs(root_vertex)
@@ -35,7 +33,7 @@ class DirectedGraph(Graph):
         # Initialize marked and history matrices non-recursively
         if history is None:
             marked = list(False for _ in self.vertices)
-            history = [] # Order vertices are processed. reverse of top_sort if graph is a DAG
+            history = []  # Order vertices are processed. reverse of top_sort if graph is a DAG
             self.parents = [-1] * len(self.vertices)
             self._timer = 0
 
@@ -128,11 +126,16 @@ e_set = [
     [0, 1],
     [0, 2],
     [2, 3],
-    [2, 4],
-    [4, 3]
+    [[2, 4], -1],
+    [3, 4]
 ]
 
 g = DirectedGraph(v_set, e_set)
+g.print_adj()
+print()
+g.print_adj_weights()
+
 print(g.vertex_weights)
+print(g.edges)
 print(g.edge_weights)
 print(g.minimum_spanning_tree().edges)
