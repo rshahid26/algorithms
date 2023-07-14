@@ -1,5 +1,6 @@
 class Node:
     """Represents a node in a binary tree."""
+    size = 0
 
     def __init__(self, data=None, parent=None, right=None, left=None):
         self.data = data
@@ -170,6 +171,16 @@ class BinarySearchTree:
             current = current.right
 
         return current.data
+
+    def balanced_array(self):
+        """Assumes a balanced binary search tree"""
+        current = self.root
+        height = 1
+        while current.left is not None:
+            current = current.left
+            height += 1
+
+        array = [] * height
 
 
 bst_list = [14, 3, 22, 1, 7, 17, 30]

@@ -3,7 +3,7 @@ from Graph import Graph
 
 class DirectedGraph(Graph):
 
-    def __init__(self, vertices: list, edges: list):
+    def __init__(self, vertices: list = None, edges: list = None):
         super().__init__(vertices, edges)
         self.edge_class = {
             "tree": [],
@@ -130,12 +130,7 @@ e_set = [
     [3, 4]
 ]
 
-g = DirectedGraph(v_set, e_set)
+g = DirectedGraph()
 g.print_adj()
-print()
 g.print_adj_weights()
 
-print(g.vertex_weights)
-print(g.edges)
-print(g.edge_weights)
-print(g.minimum_spanning_tree().edges)
