@@ -9,7 +9,6 @@ class Node:
         self.left = left
 
 
-# noinspection PyMethodMayBeStatic
 class BinarySearchTree:
     """A binary search tree with non-recursive methods."""
 
@@ -94,83 +93,95 @@ class BinarySearchTree:
 
     def get_successor(self, node: Node) -> Node:
         """Finds the in-order successor of a given node in the tree"""
-        successor = node.right
-        while successor.left is not None:
-            successor = successor.left
+        if node.right is None:
+            ancestor = node.parent
+            while ancestor is not None and node == ancestor.right:
+                node, ancestor = ancestor, ancestor.parent
+            return ancestor
 
-        return successor
+        else:
+            successor = node.right
+            while successor.left is not None:
+                successor = successor.left
+            return successor
 
     def get_predecessor(self, node):
         """Finds the in-order predecessor of a given node in the tree"""
-        successor = node.left
-        while successor.right is not None:
-            successor = successor.right
+        if node.left is None:
+            ancestor = node.parent
+            while ancestor is not None and node == ancestor.left:
+                node, ancestor = ancestor, ancestor.parent
+            return ancestor
 
-        return successor
+        else:
+            successor = node.left
+            while successor.right is not None:
+                successor = successor.right
+            return successor
 
-    def inorder_traversal(self):
-        """Performs an in-order traversal of the tree."""
-        current = self.root
-        stack = []
+    def get_sort(self):
+        """Performs an in-order traversal of the tree by finding successors."""
+        left_most = []
 
-        while True:
-            if current is not None:
-                stack.append(current)
-                current = current.left
-            elif stack:
-                current = stack.pop()
-                print(current.data, end=" ")
-                current = current.right
-            else:
-                break
+        current = self._get_min_node()
+        while current is not None:
+            left_most.append(current.data)
+            current = self.get_successor(current)
+
+        return left_most
 
     def preorder_traversal(self):
-        """Performs a pre-order traversal of the tree."""
-        current = self.root
-        stack = []
+        """Uses a left-to-right subtree DFS to traverse the tree"""
+        stack = [self.root]
+        visited = []
 
-        while True:
+        current = self.root
+        while stack:
             if current is not None:
-                print(current.data, end=" ")
+                visited.append(current.data)
                 if current.right is not None:
                     stack.append(current.right)
                 current = current.left
-            elif stack:
-                current = stack.pop()
             else:
-                break
+                current = stack.pop()
+        return visited
 
     def postorder_traversal(self):
         """Performs a post-order traversal of the tree."""
-        stack1 = [self.root]
-        stack2 = []
+        stack = [self.root]
+        visited = []
 
-        while stack1:
-            current = stack1.pop()
-            stack2.append(current)
+        while stack:
+            current = stack.pop()
+            visited.append(current)
 
             if current.left:
-                stack1.append(current.left)
+                stack.append(current.left)
             if current.right:
-                stack1.append(current.right)
+                stack.append(current.right)
 
-        while stack2:
-            current = stack2.pop()
-            print(current.data, end=" ")
+        visited.reverse()
+        return visited
 
-    def get_min(self):
+    def _get_min_node(self):
         current = self.root
         while current.left is not None:
             current = current.left
 
-        return current.data
+        return current
 
-    def get_max(self):
+    def get_min(self):
+        return self._get_min_node().data
+
+    def _get_max_node(self):
         current = self.root
         while current.right is not None:
             current = current.right
 
-        return current.data
+        return current
+
+    def get_max(self):
+        return self._get_max_node().data
 
     def balanced_array(self):
         """Assumes a balanced binary search tree"""
@@ -188,6 +199,5 @@ bst = BinarySearchTree()
 for i in bst_list:
     bst.append(i)
 
-print(bst.postorder_traversal())
-bst.delete(22)
-print(bst.postorder_traversal())
+print(bst.preorder_traversal())
+print(bst.get_sort())

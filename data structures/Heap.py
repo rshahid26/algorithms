@@ -1,4 +1,5 @@
 import math
+from PriorityQueue import PriorityQueue
 
 
 class MinHeap:
@@ -38,14 +39,14 @@ class MinHeap:
 
     def _heapify_down(self, index: int):
         if self._is_leaf(index):
-            return # Make sure left index is not empty before swapping down
+            return  # Don't swap if left index is empty
         elif self.array[index]["priority"] > self.get_left_child(index)["priority"]:
             self._swap_elements(index, self._left_index(index))
             self._heapify_down(self._left_index(index))
 
         else:
             if not self._is_contained(self._right_index(index)):
-                return # Make sure right index is not empty before swapping down
+                return  # Don't swap if right index is empty
             elif self.array[index]["priority"] > self.get_right_child(index)["priority"]:
                 self._swap_elements(index, self._right_index(index))
                 self._heapify_down(self._right_index(index))
@@ -81,6 +82,16 @@ class MinHeap:
     def get_right_child(self, index: int):
         return self.array[2 * index + 1]
 
+    def get_sort(self):
+        pq = PriorityQueue()
+        for _ in range(self._OFFSET, len(self.array), 1):
+            # Swap values of first and last elements
+            self._swap_elements(1, len(self.array) - 1)
+            self._heapify_down(1)
+            item = self.array.pop(1)
+            pq.enqueue(item["item"], item["priority"])
+        return pq
+
     def print(self):
         i = 0
         lower_bound = 0
@@ -106,13 +117,6 @@ heap.append("e", 4)
 heap.append("a", 3)
 heap.append("c", 2)
 heap.append("b", 1)
-
-heap.print()
-heap.poll()
-heap.print()
-heap.poll()
-heap.poll()
-heap.poll()
-heap.poll()
+heap.get_sort().print_elements()
 
 
