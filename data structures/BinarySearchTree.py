@@ -119,8 +119,8 @@ class BinarySearchTree:
                 successor = successor.right
             return successor
 
-    def get_sort(self):
-        """Performs an in-order traversal of the tree by finding successors."""
+    def _get_sort(self):
+        """An O(nlogn) approach to sorting (in-order traversal) using successors"""
         left_most = []
 
         current = self._get_min_node()
@@ -130,8 +130,24 @@ class BinarySearchTree:
 
         return left_most
 
+    def inorder_traversal(self):
+        """Returns an array of BST elements sorted in ascending order."""
+        stack = []
+        visited = []
+        current = self.root
+
+        while current or stack:
+            if current:
+                stack.append(current)
+                current = current.left
+            else:
+                current = stack.pop()
+                visited.append(current.data)
+                current = current.right
+        return visited
+
     def preorder_traversal(self):
-        """Uses a left-to-right subtree DFS to traverse the tree"""
+        """Returns a left-to-right DFS ordering of the tree"""
         stack = [self.root]
         visited = []
 
@@ -139,6 +155,7 @@ class BinarySearchTree:
         while stack:
             if current is not None:
                 visited.append(current.data)
+
                 if current.right is not None:
                     stack.append(current.right)
                 current = current.left
@@ -147,13 +164,13 @@ class BinarySearchTree:
         return visited
 
     def postorder_traversal(self):
-        """Performs a post-order traversal of the tree."""
+        """Uses a left-to-right post-ordering DFS of the tree."""
         stack = [self.root]
         visited = []
 
         while stack:
             current = stack.pop()
-            visited.append(current)
+            visited.append(current.data)
 
             if current.left:
                 stack.append(current.left)
@@ -199,5 +216,7 @@ bst = BinarySearchTree()
 for i in bst_list:
     bst.append(i)
 
+bst.append(0)
 print(bst.preorder_traversal())
-print(bst.get_sort())
+print(bst.inorder_traversal())
+print(bst.postorder_traversal())

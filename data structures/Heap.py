@@ -3,18 +3,35 @@ from PriorityQueue import PriorityQueue
 
 
 class MinHeap:
-    def __init__(self):
+
+    def __init__(self, elements: list = None):
         self.array = [dict]  # index elements at 1
         self._OFFSET = len(self.array)
+        self._fast_init(elements)
+
+    def _fast_init(self, elements):
+        # Initializes a heap in O(n) time using heapify_down
+        if elements is not None:
+            for item, priority in elements:
+                self.append(item, priority)
+
+            for i in range(self.size // 2, self._OFFSET - 1, -1):
+                self._heapify_down(i)  # runs O(2n) times
+
+    def _slow_init(self, elements):
+        # Initializes a heap in O(nlogn) time using heapify_up
+        if elements is not None:
+            for item, priority in elements:
+                self.append(item, priority)
+                self._heapify_up(len(self.array) - 1)
 
     @property
     def size(self):
         return len(self.array) - self._OFFSET
 
     def append(self, item, priority: int):
-        item = {"item": item, "priority": priority}
-        self.array.append(item)
-        self._heapify_up(len(self.array) - 1)
+        element = {"item": item, "priority": priority}
+        self.array.append(element)
 
     def _heapify_up(self, index: int):
         if self._parent_index(index) == 0:
@@ -111,12 +128,12 @@ class MinHeap:
             upper_bound = 2 ** (i + 1) - 1
 
 
-heap = MinHeap()
-heap.append("d", 5)
-heap.append("e", 4)
-heap.append("a", 3)
-heap.append("c", 2)
-heap.append("b", 1)
+heap = MinHeap([["d", 5], ["e", 4], ["a", 3], ["c", 2], ["b", 1], ["d", 15], ["e", 14], ["a", 13], ["c", 12], ["b", 11]])
+# heap.append("d", 5)
+# heap.append("e", 4)
+# heap.append("a", 3)
+# heap.append("c", 2)
+# heap.append("b", 1)
 heap.get_sort().print_elements()
 
 
