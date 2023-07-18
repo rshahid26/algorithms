@@ -1,6 +1,7 @@
 from Queue import Queue
 from Stack import Stack
 from WeightedEdgeList import WeightedEdgeList
+from Heap import MinHeap
 
 
 class Graph:
@@ -262,7 +263,7 @@ class Graph:
             cycles.add(tuple(cycle))  # immutable so we save on space/time
         return cycles
 
-    def minimum_spanning_edges(self, vertex: int = None) -> list:
+    def _brute_minimum_spanning_edges(self, vertex: int = None) -> list:
         """Implements Prim's algorithm for constructing MSTs. Assumes connected graph"""
         vertex_set = [self.vertices[0] if vertex is None else vertex]
         processed = [False] * len(self.vertices)
@@ -284,6 +285,33 @@ class Graph:
             MSE.append([minimum_edge, minimum_weight])
             vertex_set.append(minimum_edge[1])
             processed[minimum_edge[1]] = True
+        return MSE
+
+    def minimum_spanning_edges(self, vertex: int = None) -> list:
+        vertex_set = [self.vertices[0] if vertex is None else vertex]
+        processed = [False] * len(self.vertices)
+        processed[vertex_set[0]] = True
+        heap = MinHeap()
+        MSE = []
+
+        def add_adj_edges(v):
+            current = self.adjacency_list[v].head
+            while current is not None:
+                if not processed[current.data]:
+                    heap.append([v, current.data], current.weight)
+                current = current.next
+
+        add_adj_edges(vertex_set[0])
+        while len(vertex_set) != len(self.vertices):
+            while processed[heap.peek()["item"][1]]:
+                heap.poll_object()
+            min_edge = heap.poll_object()
+            MSE.append([min_edge["item"], min_edge["priority"]])
+
+            new_vertex = min_edge["item"][1]
+            vertex_set.append(new_vertex)
+            add_adj_edges(new_vertex)
+            processed[new_vertex] = True
         return MSE
 
     def minimum_spanning_tree(self, vertex: int = None):
@@ -344,12 +372,19 @@ class Graph:
 # print()
 # g.print_adj_weights()
 
-#
-# v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
-# e = [
-#     [[0, 1], 0],
-#     [[1, 2], 2],
-#     [[0, 3], 0],
-#     [[3, 2], 0],
-#     [[3, 4], 0]
-# ]
+
+v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
+e = [
+    [[0, 1], 1],
+    [[1, 2], 4],
+    [[0, 3], 2],
+    [[3, 2], 3],
+    [[3, 4], 5]
+]
+
+g = Graph(v, e)
+g.print_adj()
+print()
+g.print_adj_weights()
+print(g.minimum_spanning_edges())
+print(g.minimum_spanning_edges2())

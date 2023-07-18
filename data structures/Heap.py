@@ -13,17 +13,18 @@ class MinHeap:
         # Initializes a heap in O(n) time using heapify_down
         if elements is not None:
             for item, priority in elements:
-                self.append(item, priority)
+                element = {"item": item, "priority": priority}
+                self.array.append(element)
 
+            # runs O(2n) times
             for i in range(self.size // 2, self._OFFSET - 1, -1):
-                self._heapify_down(i)  # runs O(2n) times
+                self._heapify_down(i)
 
     def _slow_init(self, elements):
         # Initializes a heap in O(nlogn) time using heapify_up
         if elements is not None:
             for item, priority in elements:
                 self.append(item, priority)
-                self._heapify_up(len(self.array) - 1)
 
     @property
     def size(self):
@@ -32,6 +33,7 @@ class MinHeap:
     def append(self, item, priority: int):
         element = {"item": item, "priority": priority}
         self.array.append(element)
+        self._heapify_up(len(self.array) - 1)
 
     def _heapify_up(self, index: int):
         if self._parent_index(index) == 0:
@@ -46,13 +48,16 @@ class MinHeap:
         self.array[i1], self.array[i2] = self.array[i2], self.array[i1]
 
     def poll(self):
+        return self.poll_object()["item"]
+
+    def poll_object(self):
         top = self.array[1].copy()
         # Swap values of first and last elements
         self._swap_elements(1, len(self.array) - 1)
         self.array.pop(len(self.array) - 1)
 
         self._heapify_down(1)
-        return top["item"]
+        return top
 
     def _heapify_down(self, index: int):
         if self._is_leaf(index):
@@ -73,7 +78,7 @@ class MinHeap:
                     or self._is_contained(self._right_index(index)))
 
     def _is_contained(self, index: int) -> bool:
-        return index < len(self.array) - self._OFFSET
+        return index < self.size
 
     @staticmethod
     def _parent_index(index: int) -> int:
@@ -109,6 +114,18 @@ class MinHeap:
             pq.enqueue(item["item"], item["priority"])
         return pq
 
+    def peek(self):
+        if not self.size == 0:
+            return self.array[self._OFFSET]
+        else:
+            raise IndexError("Heap is empty.")
+
+    def back(self):
+        if not self.size == 0:
+            return self.array[len(self.array) - 1]
+        else:
+            raise IndexError("Heap is empty.")
+
     def print(self):
         i = 0
         lower_bound = 0
@@ -128,12 +145,12 @@ class MinHeap:
             upper_bound = 2 ** (i + 1) - 1
 
 
-heap = MinHeap([["d", 5], ["e", 4], ["a", 3], ["c", 2], ["b", 1], ["d", 15], ["e", 14], ["a", 13], ["c", 12], ["b", 11]])
+# heap = MinHeap([["d", 5], ["e", 4], ["a", 3], ["c", 2], ["b", 1]])
 # heap.append("d", 5)
 # heap.append("e", 4)
 # heap.append("a", 3)
 # heap.append("c", 2)
 # heap.append("b", 1)
-heap.get_sort().print_elements()
+# heap.get_sort().print_elements()
 
 
