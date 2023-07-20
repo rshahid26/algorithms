@@ -29,7 +29,7 @@ class DirectedGraph(Graph):
         return self._recursive_dfs(root_vertex)
 
     def _recursive_dfs(self, root_vertex: int, marked: list = None, history: list = None):
-        """the returned list history has a different meaning here than in super"""
+        """The history list has a different meaning here than in super"""
         # Initialize marked and history matrices non-recursively
         if history is None:
             marked = list(False for _ in self.vertices)
@@ -121,16 +121,18 @@ class DirectedGraph(Graph):
         return DirectedGraph(self._vertex_set(), self.minimum_spanning_edges(vertex))
 
 
-v_set = [0, 1, 2, 3, 4]
-e_set = [
-    [0, 1],
-    [0, 2],
-    [2, 3],
-    [[2, 4], -1],
-    [3, 4]
-]
-
-g = DirectedGraph()
-g.print_adj()
-g.print_adj_weights()
-
+# v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
+# e = [
+#     [[0, 1], 1],
+#     [[1, 2], 4],
+#     [[0, 3], 2],
+#     [[3, 2], 3],
+#     [[3, 4], 5],
+#     [[4, 0], 0]
+# ]
+#
+# g = DirectedGraph(v, e)
+# g.print_adj()
+# print()
+# g.print_adj_weights()
+# print(g.minimum_spanning_edges())

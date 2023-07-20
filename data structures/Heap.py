@@ -7,10 +7,11 @@ class MinHeap:
     def __init__(self, elements: list = None):
         self.array = [dict]  # index elements at 1
         self._OFFSET = len(self.array)
-        self._fast_init(elements)
+        self._slow_init(elements)
 
     def _fast_init(self, elements):
         # Initializes a heap in O(n) time using heapify_down
+        # TODO: Fix this
         if elements is not None:
             for item, priority in elements:
                 element = {"item": item, "priority": priority}
