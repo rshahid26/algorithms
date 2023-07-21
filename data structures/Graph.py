@@ -2,6 +2,7 @@ from Queue import Queue
 from Stack import Stack
 from WeightedEdgeList import WeightedEdgeList
 from Heap import MinHeap
+from UnionFind import UnionFind
 
 
 class Graph:
@@ -351,8 +352,6 @@ class Graph:
         pass
 
 
-class UnionFind:
-    pass
 
 
 #
