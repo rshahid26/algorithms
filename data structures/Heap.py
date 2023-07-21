@@ -131,24 +131,20 @@ class MinHeap:
             raise IndexError("Heap is empty.")
 
     def print(self):
-        i = 0
-        lower_bound = 0
-        upper_bound = 1
+        total_depth = int(math.log2(len(self.array) - 1)) + 1
 
-        while upper_bound <= (len(self.array) + 2 ** i):
-            # Recalculate upper bound if last row is not full
-            if len(self.array) - self._OFFSET < upper_bound:
-                upper_bound = len(self.array) - self._OFFSET
+        for depth in range(total_depth):
+            prefix_spaces = ' ' * (2**(total_depth - depth - 1) - 1)
+            line = []
 
-            for j in range(lower_bound + self._OFFSET, upper_bound + self._OFFSET):
-                print(str(self.array[j]["priority"]) + str(self.array[j]["item"]), end=" ")
-            print()
+            start = 2 ** depth
+            end = 2 ** (depth + 1)
+            for i in range(start, min(end, len(self.array))):
+                line.append(prefix_spaces + str(self.array[i]['item']) + prefix_spaces)
 
-            i += 1
-            lower_bound = 2 ** i - 1
-            upper_bound = 2 ** (i + 1) - 1
+            print(' '.join(line))
 
 
-heap = MinHeap([["d", 5], ["e", 4], ["a", 3], ["c", 2], ["b", 1]])
+heap = MinHeap([["d", 5], ["e", 4], ["a", 3], ["c", 2], ["b", 1], ])
 heap.print()
 

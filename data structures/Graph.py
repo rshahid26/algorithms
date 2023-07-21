@@ -264,35 +264,7 @@ class Graph:
             cycles.add(tuple(cycle))  # immutable so we save on space/time
         return cycles
 
-    def _brute_minimum_spanning_edges(self, vertex: int = None) -> list:
-        """Implements Prim's algorithm for constructing MSTs. Assumes connected graph"""
-        vertex_set = [self.vertices[0] if vertex is None else vertex]
-        processed = [False] * len(self.vertices)
-        processed[vertex_set[0]] = True
-
-        minimum_edge = []
-        MSE = []
-        while len(vertex_set) != len(self.vertices):
-            minimum_weight = float('inf')
-
-            for i in vertex_set:
-                current = self.adjacency_list[i].head
-                while current is not None:
-                    if current.weight < minimum_weight and not processed[current.data]:
-                        minimum_edge = [i, current.data]
-                        minimum_weight = current.weight
-                    current = current.next
-
-            MSE.append([minimum_edge, minimum_weight])
-            vertex_set.append(minimum_edge[1])
-            processed[minimum_edge[1]] = True
-        return MSE
-
     def minimum_spanning_edges(self, vertex: int = None) -> list:
-        vertex = vertex if vertex is not None else self.vertices[0]
-        processed = [False] * len(self.vertices)
-        heap, MSE = MinHeap(), []
-
         def add_edges_to_heap(v):
             current = self.adjacency_list[v].head
             while current is not None:
@@ -304,6 +276,10 @@ class Graph:
             while processed[heap.peek()["item"][1]]:
                 heap.poll_object()
             return heap.poll_object()
+
+        vertex = vertex if vertex is not None else self.vertices[0]
+        processed = [False] * len(self.vertices)
+        heap, MSE = MinHeap(), []
 
         add_edges_to_heap(vertex)
         processed[vertex] = True
@@ -332,12 +308,12 @@ class Graph:
         return MinHeap(self._edge_set())
 
     def _brute_kruskal(self):
-        sorted_edges = self.get_sorted_edges()
+        sorted_edges = self._sort_edges()
         spanning_trees = [[False] * len(self.vertices)] * len(self.vertices)
         MSE = []
 
-        while len(MSE) < len(self.vertices):
-            edge = sorted_edges.poll()
+        while len(MSE) < len(self.vertices) - 1:
+            edge = sorted_edges.pop(0)
             if not spanning_trees[edge[0]][edge[1]]:
                 MSE.append(edge)
                 for i in range(len(self.vertices)):
@@ -349,6 +325,7 @@ class Graph:
         return MSE
 
     def kruskal(self):
+
         pass
 
 
@@ -380,12 +357,12 @@ e = [
     [[0, 3], 2],
     [[3, 2], 3],
     [[3, 4], 5],
-    [[4, 0], 0]
+    [[4, 0], 6]
 ]
 
 g = Graph(v, e)
 g.print_adj()
 print()
 g.print_adj_weights()
-g.get_sorted_edges().print()
-print(g.get_sorted_edges().array)
+
+print(g.minimum_spanning_tree())
