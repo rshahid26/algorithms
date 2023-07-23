@@ -1,6 +1,5 @@
 import math
 
-
 def binary_search(list, target):
     """
     Searches for an element in a sorted array in O(log n) time.
