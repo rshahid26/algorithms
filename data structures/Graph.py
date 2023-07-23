@@ -143,35 +143,21 @@ class Graph:
 
         return history if len(history) == len(self.vertices) else marked
 
-    def _recursive_get_shortest_path(self, source: int, target: int, path: list = None) -> list:
-        """Returns an array of vertices that go from source vertex to target vertex"""
-        if path is None:
-            self.bfs(source)
-            path = [target]
-        if self.parents[target] == -1:
-            return [-1]
-
-        path.append(self.parents[target])
-        if self.parents[target] == source:
-            return path[::-1]
-        else:
-            return self._recursive_get_shortest_path(source, self.parents[target], path)
-
     def get_shortest_path(self, source: int, target: int):
         self.bfs(source)
-        return self.__find_path(source, target)
+        return self._find_path(source, target)
 
     def get_dfs_path(self, source: int, target: int):
         self.dfs(source)
-        return self.__find_path(source, target)
+        return self._find_path(source, target)
 
-    def __find_path(self, source: int, target: int):
+    def _find_path(self, source: int, target: int) -> list:
         path = [target]
         while self.parents[target] != source:
             if self.parents[target] == -1:
                 if target == source:
                     break
-                return -1
+                return []
 
             path.append(self.parents[target])
             target = self.parents[target]
@@ -279,7 +265,7 @@ class Graph:
 
         vertex = vertex if vertex is not None else self.vertices[0]
         processed = [False] * len(self.vertices)
-        heap, MSE = MinHeap(), []
+        heap, mse = MinHeap(), []
 
         add_edges_to_heap(vertex)
         processed[vertex] = True
@@ -287,10 +273,10 @@ class Graph:
             min_edge = get_minimum_edge()
             found_vertex = min_edge["item"][1]
 
-            MSE.append([min_edge["item"], min_edge["priority"]])
+            mse.append([min_edge["item"], min_edge["priority"]])
             add_edges_to_heap(found_vertex)
             processed[found_vertex] = True
-        return MSE
+        return mse
 
     def minimum_spanning_tree(self, vertex: int = None):
         """Returns the minimum spanning edges as an object of the Graph class"""
@@ -305,31 +291,37 @@ class Graph:
         return list(zip(self.edges, self.edge_weights))
 
     def get_sorted_edges(self):
-        return MinHeap(self._edge_set())
+        pq = MinHeap(self._edge_set()).get_sort().queue
+        return [element["item"] for element in pq]
 
     def _brute_kruskal(self):
         sorted_edges = self._sort_edges()
         spanning_trees = [[False] * len(self.vertices)] * len(self.vertices)
-        MSE = []
+        mse = []
 
-        while len(MSE) < len(self.vertices) - 1:
+        while len(mse) < len(self.vertices) - 1:
             edge = sorted_edges.pop(0)
             if not spanning_trees[edge[0]][edge[1]]:
-                MSE.append(edge)
+                mse.append(edge)
                 for i in range(len(self.vertices)):
                     # Combine the trees
                     if spanning_trees[edge[0]][i]:
                         spanning_trees[edge[1]][i] = True
                     if spanning_trees[edge[1]][i]:
                         spanning_trees[edge[0]][i] = True
-        return MSE
+        return mse
 
-    def kruskal(self):
+    def kruskal(self):    
+        sorted_edges = self.get_sorted_edges()
+        uf = UnionFind(self.vertices)
+        mse = []
 
-        pass
-
-
-
+        for edge in sorted_edges:
+            if not uf.is_connected(edge[0], edge[1]):
+                uf.union(edge[0], edge[1])
+                mse.append(edge)
+                
+        return mse
 
 #
 # v_set = [0, 1, 2, 3, 4]
@@ -349,7 +341,6 @@ class Graph:
 # print()
 # g.print_adj_weights()
 
-
 v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
 e = [
     [[0, 1], 1],
@@ -365,4 +356,5 @@ g.print_adj()
 print()
 g.print_adj_weights()
 
-print(g.minimum_spanning_tree())
+print(g.minimum_spanning_tree().edges)
+print(g.kruskal())

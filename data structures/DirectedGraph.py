@@ -120,6 +120,9 @@ class DirectedGraph(Graph):
     def minimum_spanning_tree(self, vertex: int = None):
         return DirectedGraph(self._vertex_set(), self.minimum_spanning_edges(vertex))
 
+    def kruskal(self):
+        raise Exception("Undirected Graphs only")
+
 
 # v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
 # e = [
