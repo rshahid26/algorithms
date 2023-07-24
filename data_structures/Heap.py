@@ -51,7 +51,7 @@ class MinHeap:
         return self.poll_object()["item"]
 
     def poll_object(self):
-        top = self.array[1].copy()
+        top = self.array[self._OFFSET].copy()
         # Swap values of first and last elements
         self._swap_elements(1, len(self.array) - 1)
         self.array.pop(len(self.array) - 1)
@@ -143,8 +143,4 @@ class MinHeap:
                 line.append(prefix_spaces + str(self.array[i]['item']) + prefix_spaces)
 
             print(' '.join(line))
-
-
-heap = MinHeap([["d", 5], ["e", 4], ["a", 3], ["c", 2], ["b", 1], ])
-heap.print()
 

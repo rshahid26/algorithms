@@ -1,4 +1,6 @@
-from data_structures import DirectedGraph
+import data_structures
+
+
 v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
 e = [
     [[0, 1], 1],
@@ -9,7 +11,7 @@ e = [
     [[4, 0], 0]
 ]
 
-g = DirectedGraph(v, e)
+g = data_structures.DirectedGraph(v, e)
 g.print_adj()
 print()
 g.print_adj_weights()

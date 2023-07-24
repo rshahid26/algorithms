@@ -2,7 +2,7 @@ class Queue:
     def __init__(self):
         self.queue = []
 
-    def enqueue(self, item, priority: None):
+    def enqueue(self, item, priority: int = 0):
         self.queue.append(item)
 
     def dequeue(self):

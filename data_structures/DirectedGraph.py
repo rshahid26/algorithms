@@ -30,7 +30,6 @@ class DirectedGraph(Graph):
 
     def _recursive_dfs(self, root_vertex: int, marked: list = None, history: list = None):
         """The history list has a different meaning here than in super"""
-        # Initialize marked and history matrices non-recursively
         if history is None:
             marked = list(False for _ in self.vertices)
             history = []  # Order vertices are processed. reverse of top_sort if graph is a DAG

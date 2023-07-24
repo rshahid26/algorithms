@@ -77,9 +77,10 @@ class Graph:
     def bfs(self, root_vertex: int):
         # Queue for adjacent vertices checked in FIFO order
         queue = Queue()
-        queue.enqueue(self.vertices[root_vertex])
+        queue.enqueue(root_vertex)
         # History of vertices with adjacent lists already searched
         processed = [False for _ in range(len(self.vertices))]
+        visited = [False for _ in range(len(self.vertices))]
         # Dictionary for storing parents of vertices
         self.parents = [-1 for _ in range(len(self.vertices))]
         # Order in which adjacency lists are exhausted
@@ -87,15 +88,16 @@ class Graph:
 
         while queue.size != 0:
             vertex = queue.dequeue()
-            current = self.adjacency_list[vertex].head
 
             if not processed[vertex]:
+                current = self.adjacency_list[vertex].head
                 while current is not None:
+                    if not visited[current.data]:
+                        self.parents[current.data] = vertex
                     if not processed[current.data]:
                         queue.enqueue(current.data)
-                        self.parents[current.data] = vertex
+                    visited[current.data] = True
                     current = current.next
-
                 processed[vertex] = True
                 history.append(vertex)
         return history
@@ -164,12 +166,11 @@ class Graph:
 
         path.append(source)
         return path[::-1]
-
-    def get_edge_weight(self, path: list) -> int:
+    
+    def get_path_weight(self, path: list) -> int:
         weight = 0
         for i in range(len(path) - 1):
-
-            current = self.adjacency_list[i].head
+            current = self.adjacency_list[path[i]].head
             while current is not None:
                 if current.data == path[i + 1]:
                     weight += current.weight
@@ -178,6 +179,29 @@ class Graph:
             if current is None:
                 raise ReferenceError("Path does not exist")
         return weight
+
+    def get_lightest_path(self, source: int, target: int) -> list:
+        self.parents = [-1] * len(self.vertices)
+        processed = [False] * len(self.vertices)
+        distances = [float('inf')] * len(self.vertices)
+        distances[source] = 0
+
+        heap = MinHeap()
+        heap.append(source, 0)
+        while heap.size != 0:
+            vertex, distance = heap.poll_object().values()
+            if not processed[vertex]:
+                processed[vertex] = True
+
+                current = self.adjacency_list[vertex].head
+                while current is not None:
+                    if not processed[current.data]:
+                        if distances[current.data] > distance + current.weight:
+                            self.parents[current.data] = vertex
+                            distances[current.data] = distance + current.weight
+                            heap.append(current.data, distances[current.data])
+                    current = current.next
+        return self._find_path(source, target)
 
     def is_connected(self) -> bool:
         component = self.bfs(self.vertices[0])
@@ -236,18 +260,28 @@ class Graph:
 
         return tree_edges
 
-    def get_cycles(self, root=None) -> set:
-        if root is None:
-            back_edges = self.get_back_edges(self.vertices[0])
-        else:
-            back_edges = self.get_back_edges(root)
+    def get_cycles(self, root_vertex: int) -> list:
+        stack = Stack()
+        stack.push(root_vertex)
+        processed = [False] * len(self.vertices)
+        self.parents = [-1 for _ in range(len(self.vertices))]
+        cycles = []
 
-        cycles = set()
-        for edge in back_edges:
-            cycle = self.get_dfs_path(edge[1], edge[0])
-            cycle.extend(edge[1:])
+        while stack.size != 0:
+            vertex = stack.pop()
+            current = self.adjacency_list[vertex].head
 
-            cycles.add(tuple(cycle))  # immutable so we save on space/time
+            if not processed[vertex]:
+                while current is not None:
+                    if not processed[current.data]:
+                        stack.push(current.data)
+                        self.parents[current.data] = vertex
+                    elif self.parents[vertex] != current.data:
+                        cycles.append([vertex] +
+                                      self.get_dfs_path(self.parents[vertex], current.data) +
+                                      [vertex])
+                    current = current.next
+                processed[vertex] = True
         return cycles
 
     def minimum_spanning_edges(self, vertex: int = None) -> list:
@@ -294,23 +328,6 @@ class Graph:
         pq = MinHeap(self._edge_set()).get_sort().queue
         return [element["item"] for element in pq]
 
-    def _brute_kruskal(self):
-        sorted_edges = self._sort_edges()
-        spanning_trees = [[False] * len(self.vertices)] * len(self.vertices)
-        mse = []
-
-        while len(mse) < len(self.vertices) - 1:
-            edge = sorted_edges.pop(0)
-            if not spanning_trees[edge[0]][edge[1]]:
-                mse.append(edge)
-                for i in range(len(self.vertices)):
-                    # Combine the trees
-                    if spanning_trees[edge[0]][i]:
-                        spanning_trees[edge[1]][i] = True
-                    if spanning_trees[edge[1]][i]:
-                        spanning_trees[edge[0]][i] = True
-        return mse
-
     def kruskal(self):    
         sorted_edges = self.get_sorted_edges()
         uf = UnionFind(self.vertices)
@@ -323,32 +340,15 @@ class Graph:
                 
         return mse
 
-#
-# v_set = [0, 1, 2, 3, 4]
-# e_set = [
-#     [0, 1],
-#     [0, 2],
-#     [2, 3],
-#     [2, 4],
-#     [3, 4]
-# ]
-#
-# g = Graph(v_set, e_set)
-# g.add_vertex([5, 0])
-# g.add_edge([5, 1])
-#
-# g.print_adj()
-# print()
-# g.print_adj_weights()
 
 v = [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4]]
 e = [
-    [[0, 1], 1],
-    [[1, 2], 4],
-    [[0, 3], 2],
+    [[0, 1], 2],
+    [[1, 2], 7],
+    [[0, 3], 5],
     [[3, 2], 3],
-    [[3, 4], 5],
-    [[4, 0], 6]
+    [[3, 4], 4],
+    [[0, 4], 12]
 ]
 
 g = Graph(v, e)
@@ -356,5 +356,6 @@ g.print_adj()
 print()
 g.print_adj_weights()
 
-print(g.minimum_spanning_tree().edges)
-print(g.kruskal())
+path = g.get_lightest_path(4, 0)
+print(path)
+print(g.get_path_weight(path))
