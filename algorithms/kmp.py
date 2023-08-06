@@ -1,28 +1,7 @@
-import math
-
-def binary_search(list, target):
-    """
-    Searches for an element in a sorted array in O(log n) time.
-    """
-    low = 0
-    high = len(list) - 1
-
-    while low <= high:
-        mid = math.floor((low + high) / 2)
-
-        if target == list[mid]:
-            return mid
-
-        if target < list[mid]:
-            high = mid - 1
-        else:
-            low = mid + 1
-    return -1
-
-
-# Knuth-Morris-Pratt algorithm for pattern matching strings in O(n) vs O(nm) time.
-# noinspection PyPep8Naming
 def kmp_search(text, pattern):
+    """Knuth-Morris-Pratt algorithm for pattern matching
+    strings in O(n) time vs O(nm) brute force."""
+
     M = len(pattern)
     N = len(text)
     lps = compute_prefix_function(pattern)

@@ -50,6 +50,10 @@ def insertion_sort(list):
     return ''.join(list)
 
 
+def merge_sort():
+    pass
+
+
 # test_string = "insertionsort"
 # print(sort_bf(list(test_string)))
 # print(selection_sort(list(test_string)))
