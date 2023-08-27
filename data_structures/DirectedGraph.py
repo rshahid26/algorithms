@@ -1,3 +1,5 @@
+import collections
+
 from Graph import Graph
 
 
@@ -93,11 +95,33 @@ class DirectedGraph(Graph):
             if not marked[vertex]:
                 history += self.dfs(vertex, marked)
             if self.num_distinct_cycles() > 0:
-                raise ValueError("Graph cannot be topologically sorted")
+                return None
 
         # Vertices processed first (leafs) should go last and so on
         history.reverse()
         return history
+
+    def kahns(self):
+        """Returns a topological sort of the graph by pruning roots"""
+        in_degree = [0] * len(self.vertices)
+        for vertex in self.vertices:
+            for neighbor in self.adjacency_list[vertex]:
+                in_degree[neighbor] += 1
+
+        queue = collections.deque()
+        for vertex in self.vertices:
+            if in_degree[vertex] == 0:
+                queue.append(vertex)
+
+        history = []
+        while queue:
+            vertex = queue.popleft()
+            for neighbor in self.adjacency_list[vertex]:
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0:
+                    queue.append(neighbor)
+            history.append(vertex)
+        return history if len(history) == len(self.vertices) else None
 
     def get_root_vertex(self) -> int:
         """Returns the first vertex found with no parents"""
@@ -125,7 +149,17 @@ class DirectedGraph(Graph):
     def get_transpose(self):
         return DirectedGraph(self.vertices, self.get_edge_transpose())
 
+    def is_weakly_connected(self) -> bool:
+        undirected_graph = Graph(self.vertices, self.edges)
+
+        component = undirected_graph.bfs(self.vertices[0])
+        return len(component) == len(self.vertices)
+
     def is_connected(self) -> bool:
+        """Override connectedness test for undirected graphs"""
+        return self.is_weakly_connected()
+
+    def is_strongly_connected(self) -> bool:
         """Strongly connected requirement using Kosaraju's algorithm"""
         if not self.vertices:
             return True
@@ -140,6 +174,26 @@ class DirectedGraph(Graph):
             if not marked[vertex] or not marked_from[vertex]:
                 return False
         return True
+
+    def strongly_connected_components(self) -> set:
+        """Stateful Kosaraju's algorithm for getting SCCs"""
+        marked = list(False for _ in self.vertices)
+        history = []
+        for vertex in range(len(marked)):
+            if not marked[vertex]:
+                history += self.dfs(vertex, marked)
+
+        transpose = self.get_transpose()
+        marked = list(False for _ in self.vertices)
+
+        scc = set()
+        while history:
+            vertex = history.pop()
+            if not marked[vertex]:
+                curr_scc = transpose.bfs(vertex, marked)
+                if len(curr_scc) > 1:  # Ignore leafs
+                    scc.add(curr_scc)
+        return scc
 
     def minimum_spanning_tree(self, vertex: int = None):
         return DirectedGraph(self._vertex_set(), self.minimum_spanning_edges(vertex))

@@ -1,3 +1,5 @@
+import collections
+
 from Queue import Queue
 from Stack import Stack
 from WeightedEdgeList import WeightedEdgeList
@@ -74,58 +76,49 @@ class Graph:
                     current = current.next
                 return neighbors
 
-    def bfs(self, root_vertex: int):
-        # Queue for adjacent vertices checked in FIFO order
-        queue = Queue()
-        queue.enqueue(root_vertex)
-        # History of vertices with adjacent lists already searched
-        processed = [False for _ in range(len(self.vertices))]
-        visited = [False for _ in range(len(self.vertices))]
-        # Dictionary for storing parents of vertices
+    def bfs(self, root_vertex: int, visited: list = None):
+        visited = [False for _ in range(len(self.vertices))] if visited is None else visited
         self.parents = [-1 for _ in range(len(self.vertices))]
-        # Order in which vertices are processed
+
         history = []
+        queue = collections.deque([root_vertex])
 
-        while queue.size != 0:
-            vertex = queue.dequeue()
+        while queue:
+            vertex = queue.popleft()
+            visited[vertex] = True
 
-            if not processed[vertex]:
-                current = self.adjacency_list[vertex].head
-                while current is not None:
-                    if not visited[current.data]:
-                        self.parents[current.data] = vertex
-                    if not processed[current.data]:
-                        queue.enqueue(current.data)
+            current = self.adjacency_list[vertex].head
+            while current is not None:
+                if not visited[current.data]:
+                    queue.append(current.data)
+                    self.parents[current.data] = vertex
                     visited[current.data] = True
-                    current = current.next
-                processed[vertex] = True
-                history.append(vertex)
+                current = current.next
+
+            history.append(vertex)
         return history
 
-    def dfs(self, root_vertex: int):
-        # Stack for adjacent vertices checked in LIFO order
+    def dfs(self, root_vertex: int, visited: list = None):
+        visited = [False] * len(self.vertices) if visited is None else visited
+        self.parents = [-1 for _ in range(len(self.vertices))]
+
+        history = []
         stack = Stack()
         stack.push(root_vertex)
-        # History of vertices with adjacent lists already searched
-        processed = [False] * len(self.vertices)
-        # Dictionary for storing parents of vertices
-        self.parents = [-1 for _ in range(len(self.vertices))]
-        # Order in which adjacency lists are exhausted
-        history = []
 
         while stack.size != 0:
             vertex = stack.pop()
+            visited[vertex] = True
+
             current = self.adjacency_list[vertex].head
+            while current is not None:
+                if not visited[current.data]:
+                    stack.push(current.data)
+                    self.parents[current.data] = vertex
+                    visited[current.data] = True
+                current = current.next
 
-            if not processed[vertex]:
-                while current is not None:
-                    if not processed[current.data]:
-                        stack.push(current.data)
-                        self.parents[current.data] = vertex
-                    current = current.next
-
-                processed[vertex] = True
-                history.append(vertex)
+            history.append(vertex)
         return history
 
     def _recursive_dfs(self, root_vertex: int, marked: list = None, history: list = None):
@@ -188,10 +181,10 @@ class Graph:
         distances = [float('inf')] * len(self.vertices)
         distances[source] = 0
 
-        heap = MinHeap()
-        heap.append(source, 0)
-        while heap.size != 0:
-            vertex, distance = heap.poll_object().values()
+        queue = MinHeap()
+        queue.append(source, 0)
+        while queue.size != 0:
+            vertex, distance = queue.poll_object().values()
             if not processed[vertex]:
                 processed[vertex] = True
 
@@ -201,7 +194,7 @@ class Graph:
                         if distances[current.data] > distance + current.weight:
                             self.parents[current.data] = vertex
                             distances[current.data] = distance + current.weight
-                            heap.append(current.data, distances[current.data])
+                            queue.append(current.data, distances[current.data])
                     current = current.next
         return self._find_path(source, target)
 
@@ -293,7 +286,6 @@ class Graph:
                 if not processed[current.data]:
                     heap.append([v, current.data], current.weight)
                 current = current.next
-
 
         def get_minimum_edge():
             while processed[heap.peek()["item"][1]]:
