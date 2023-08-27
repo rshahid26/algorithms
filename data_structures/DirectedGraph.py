@@ -25,41 +25,44 @@ class DirectedGraph(Graph):
         # Add edges in the v1 -> v2 direction only
         self.adjacency_list[edge[0]].prepend(edge[1], weight)
 
-    def dfs(self, root_vertex):
-        return self._recursive_dfs(root_vertex)
+    def dfs(self, root_vertex, marked: list = None):
+        marked = list(False for _ in self.vertices) if marked is None else marked
+        history = []  # Order in which the dfs trees from each vertex is fully exhausted
 
-    def _recursive_dfs(self, root_vertex: int, marked: list = None, history: list = None):
-        """The history list has a different meaning here than in super"""
-        if history is None:
-            marked = list(False for _ in self.vertices)
-            history = []  # Order vertices are processed. reverse of top_sort if graph is a DAG
-            self.parents = [-1] * len(self.vertices)
-            self._timer = 0
+        self.parents = [-1] * len(self.vertices)
+        self._timer = 0
 
-        marked[root_vertex] = "discovered"
+        self._recursive_dfs(root_vertex, marked, history)
+        return history
+
+    def _recursive_dfs(self, vertex: int, marked: list = None, history: list = None):
+        """The history list has a different meaning here than in iterative dfs"""
+        marked[vertex] = "visited"
         self._timer += 1
-        self._time[root_vertex]["entry"] = self._timer
+        self._time[vertex]["entry"] = self._timer
 
-        current = self.adjacency_list[root_vertex].head
+        current = self.adjacency_list[vertex].head
         while current is not None:
             if not marked[current.data]:
-                self.parents[current.data] = root_vertex
+                self.parents[current.data] = vertex
                 self._recursive_dfs(current.data, marked, history)
 
-            self._classify_edge(root_vertex, current.data, marked)
+            self._classify_edge(vertex, current.data, marked)
             current = current.next
 
-        marked[root_vertex] = "processed"
-        history.append(root_vertex)
+        marked[vertex] = "processed"
+        history.append(vertex)
         self._timer += 1
-        self._time[root_vertex]["exit"] = self._timer
-        return history if len(history) == len(self.vertices) else marked
+        self._time[vertex]["exit"] = self._timer
+        return marked
 
     def _classify_edge(self, source, target, marked):
+        # Direct ancestor in the dfs tree
         if self.parents[target] == source:
             self.edge_class["tree"].append([source, target])
 
-        elif marked[target] == "discovered" and not marked[target] == "processed":
+        # Ancestor in the dfs tree
+        elif marked[target] == "visited" and not marked[target] == "processed":
             self.edge_class["back"].append([source, target])
 
         elif marked[target] == "processed" and (self._time[target]["entry"] > self._time[source]["entry"]):
@@ -80,15 +83,21 @@ class DirectedGraph(Graph):
         return self.edge_class["tree"]
 
     def num_distinct_cycles(self):
-        return len(self.edge_class["back"] + self.edge_class["forward"] + self.edge_class["cross"])
+        return len(self.edge_class["back"])
 
-    def top_sort(self, root_vertex: int = None) -> list:
-        if root_vertex is None:
-            root_vertex = self.get_root_vertex()  # top_sort DNE if raises error
+    def top_sort(self) -> list:
+        marked = list(False for _ in self.vertices)
+        history = []
 
-        history = self.dfs(root_vertex)
+        for vertex in range(len(marked)):
+            if not marked[vertex]:
+                history += self.dfs(vertex, marked)
+            if self.num_distinct_cycles() > 0:
+                raise ValueError("Graph cannot be topologically sorted")
+
+        # Vertices processed first (leafs) should go last and so on
         history.reverse()
-        return history if self.num_distinct_cycles() > 0 else None
+        return history
 
     def get_root_vertex(self) -> int:
         """Returns the first vertex found with no parents"""
@@ -116,8 +125,30 @@ class DirectedGraph(Graph):
     def get_transpose(self):
         return DirectedGraph(self.vertices, self.get_edge_transpose())
 
+    def is_connected(self) -> bool:
+        """Strongly connected requirement using Kosaraju's algorithm"""
+        if not self.vertices:
+            return True
+
+        marked = [False] * len(self.vertices)
+        marked_from = [False] * len(self.vertices)
+
+        self.dfs(self.vertices[0], marked)
+        self.get_transpose().dfs(self.vertices[0], marked_from)
+
+        for vertex in range(len(self.vertices)):
+            if not marked[vertex] or not marked_from[vertex]:
+                return False
+        return True
+
     def minimum_spanning_tree(self, vertex: int = None):
         return DirectedGraph(self._vertex_set(), self.minimum_spanning_edges(vertex))
 
     def kruskal(self):
-        raise Exception("Undirected Graphs only")
+        raise Exception("For directed graphs, use minimum_spanning_tree(vertex) instead.")
+
+
+vertices = [0, 1, 2, 3, 4]
+edges = [[0,1], [1,2], [2,3], [2, 4], [0, 4]]
+
+graph = DirectedGraph(vertices, edges)

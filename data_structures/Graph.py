@@ -83,7 +83,7 @@ class Graph:
         visited = [False for _ in range(len(self.vertices))]
         # Dictionary for storing parents of vertices
         self.parents = [-1 for _ in range(len(self.vertices))]
-        # Order in which adjacency lists are exhausted
+        # Order in which vertices are processed
         history = []
 
         while queue.size != 0:
@@ -129,21 +129,23 @@ class Graph:
         return history
 
     def _recursive_dfs(self, root_vertex: int, marked: list = None, history: list = None):
-        # Initialize marked and history matrices non-recursively
-        if history is None:
-            marked = list(False for _ in self.vertices)
-            history = [root_vertex]
+        marked = list(False for _ in self.vertices) if marked is None else marked
+        history = []
 
+        self.__undirected_recursive_dfs(root_vertex, marked, history)
+        return history
+
+    def __undirected_recursive_dfs(self, root_vertex: int, marked: list, history: list):
         marked[root_vertex] = True
         current = self.adjacency_list[root_vertex].head
 
         while current is not None:
             if not marked[current.data]:
                 history.append(current.data)
-                self._recursive_dfs(current.data, marked, history)
+                self.__undirected_recursive_dfs(current.data, marked, history)
             current = current.next
 
-        return history if len(history) == len(self.vertices) else marked
+        return marked
 
     def get_shortest_path(self, source: int, target: int):
         self.bfs(source)
@@ -291,6 +293,7 @@ class Graph:
                 if not processed[current.data]:
                     heap.append([v, current.data], current.weight)
                 current = current.next
+
 
         def get_minimum_edge():
             while processed[heap.peek()["item"][1]]:
