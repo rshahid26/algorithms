@@ -35,9 +35,7 @@ class BinarySearchTree:
                 current = current.left
 
     def find_node(self, data):
-        """Returns a reference to the node with the given data."""
         current = self.root
-
         while current is not None:
             if current.data == data:
                 return current
@@ -120,7 +118,6 @@ class BinarySearchTree:
             return successor
 
     def _get_sort(self):
-        """An O(nlogn) approach to sorting (in-order traversal) using successors"""
         left_most = []
 
         current = self._get_min_node()
@@ -130,80 +127,89 @@ class BinarySearchTree:
 
         return left_most
 
-    def inorder_traversal(self):
-        """Returns an array of BST elements sorted in ascending order."""
+    def in_order(self):
+        order = []
         stack = []
-        visited = []
         current = self.root
 
-        while current or stack:
+        while stack or current:  # "or current" for when left subtree is exhausted
             if current:
                 stack.append(current)
                 current = current.left
             else:
                 current = stack.pop()
-                visited.append(current.data)
+                order.append(current.data)
                 current = current.right
-        return visited
+        return order
 
-    def preorder_traversal(self):
-        """Returns a left-to-right DFS ordering of the tree"""
-        stack = [self.root]
-        visited = []
-
-        current = self.root
-        while stack:
-            if current is not None:
-                visited.append(current.data)
-                if current.right is not None:
-                    stack.append(current.right)
-                current = current.left
-            else:
-                current = stack.pop()
-        return visited
-
-    def postorder_traversal(self):
-        """Uses a left-to-right post-ordering DFS of the tree."""
-        stack = [self.root]
-        visited = []
+    def pre_order(self):
+        stack = [self.root] if self.root is not None else []
+        order = []
 
         while stack:
             current = stack.pop()
-            visited.append(current.data)
+            if current.right:
+                stack.append(current.right)
+            if current.left:
+                stack.append(current.left)
+            order.append(current.data)
+        return order
 
+    def post_order(self):
+        stack = [self.root] if self.root is not None else []
+        order = []
+
+        while stack:
+            current = stack.pop()
             if current.left:
                 stack.append(current.left)
             if current.right:
                 stack.append(current.right)
+            order.append(current.data)
+        order.reverse()
+        return order
 
-        visited.reverse()
-        return visited
+    def get_min(self):
+        return self._get_min_node().data
 
     def _get_min_node(self):
         current = self.root
         while current.left is not None:
             current = current.left
-
-        return current
-
-    def get_min(self):
-        return self._get_min_node().data
-
-    def _get_max_node(self):
-        current = self.root
-        while current.right is not None:
-            current = current.right
-
         return current
 
     def get_max(self):
         return self._get_max_node().data
 
-    def balanced_array(self):
-        """Assumes a balanced binary search tree"""
+    def _get_max_node(self):
         current = self.root
-        height = 1
-        while current.left is not None:
-            current = current.left
-            height += 1
-        array = [] * height
+        while current.right is not None:
+            current = current.right
+        return current
+
+    def print_tree(self, node=None, level=0, prefix="C: "):
+        """Recursive function to print the tree."""
+        if node is None:
+            node = self.root
+
+        print(" " * (level * 4) + prefix + str(node.data))
+        if node.left is not None or node.right is not None:
+            if node.left is not None:
+                self.print_tree(node.left, level + 1, "L: ")
+            else:
+                print(" " * ((level + 1) * 4) + "L: ")
+
+            if node.right is not None:
+                self.print_tree(node.right, level + 1, "R: ")
+            else:
+                print(" " * ((level + 1) * 4) + "R: ")
+
+
+bst = BinarySearchTree()
+for i in [14, 3, 22, 1, 7, 17, 30, 80]:
+    bst.append(i)
+
+bst.print_tree()
+print("Inorder", bst.in_order())
+print("Preorder", bst.pre_order())
+print("Postorder", bst.post_order())

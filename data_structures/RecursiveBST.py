@@ -113,40 +113,38 @@ class RecursiveBST:
         else:
             return self._recursive_get_max(node.right)
 
-    def in_order_traversal(self):
-        result = []
-        self._in_order_traversal_recursive(self.root, result)
+    def in_order(self, node: Node = None, result: list = None):
+        if result is None:
+            result = []
+            node = self.root if node is None else node
+
+        if node is not None:
+            self.in_order(node.left, result)
+            result.append(node.data)
+            self.in_order(node.right, result)
         return result
 
-    def _in_order_traversal_recursive(self, node, result):
-        if node is not None:
-            self._in_order_traversal_recursive(node.left, result)
-            result.append(node.data)
-            self._in_order_traversal_recursive(node.right, result)
+    def pre_order(self, node: Node = None, result: list = None):
+        if result is None:
+            result = []
+            node = self.root if node is None else node
 
-    def pre_order_traversal(self):
-        """Wrapper for the recursive pre-order traversal method in O(n) time."""
-        result = []
-        self._pre_order_traversal_recursive(self.root, result)
+        if node is not None:
+            result.append(node.data)
+            self.pre_order(node.left, result)
+            self.pre_order(node.right, result)
         return result
 
-    def _pre_order_traversal_recursive(self, node, result):
-        if node is not None:
-            result.append(node.data)
-            self._pre_order_traversal_recursive(node.left, result)
-            self._pre_order_traversal_recursive(node.right, result)
+    def post_order(self, node: Node = None, result: list = None):
+        if result is None:
+            result = []
+            node = self.root if node is None else node
 
-    def post_order_traversal(self):
-        """Wrapper for the recursive post-order traversal method in O(n) time."""
-        result = []
-        self._post_order_traversal_recursive(self.root, result)
+        if node is not None:
+            self.post_order(node.left, result)
+            self.post_order(node.right, result)
+            result.append(node.data)
         return result
-
-    def _post_order_traversal_recursive(self, node, result):
-        if node is not None:
-            self._post_order_traversal_recursive(node.left, result)
-            self._post_order_traversal_recursive(node.right, result)
-            result.append(node.data)
 
 
 bst_list = [14, 3, 22, 1, 7, 17, 30]
@@ -154,7 +152,7 @@ bst = RecursiveBST()
 for i in bst_list:
     bst.append(i)
 
-print(bst.in_order_traversal())
+print(bst.in_order())
 print(bst.root.left.left.parent.parent.data)
 
 
