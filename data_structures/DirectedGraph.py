@@ -94,10 +94,10 @@ class DirectedGraph(Graph):
         for vertex in range(len(marked)):
             if not marked[vertex]:
                 history += self.dfs(vertex, marked)
-            if self.num_distinct_cycles() > 0:
-                return None
+                if self.num_distinct_cycles() > 0:
+                    return None
 
-        # Vertices processed first (leafs) should go last and so on
+        # Vertices processed first (leaves) should go last and so on
         history.reverse()
         return history
 
@@ -179,7 +179,7 @@ class DirectedGraph(Graph):
         """Stateful Kosaraju's algorithm for getting SCCs"""
         marked = list(False for _ in self.vertices)
         history = []
-        for vertex in range(len(marked)):
+        for vertex in range(len(self.vertices)):
             if not marked[vertex]:
                 history += self.dfs(vertex, marked)
 
@@ -191,7 +191,7 @@ class DirectedGraph(Graph):
             vertex = history.pop()
             if not marked[vertex]:
                 curr_scc = transpose.bfs(vertex, marked)
-                if len(curr_scc) > 1:  # Ignore leafs
+                if len(curr_scc) > 1:  # Ignore leaves
                     scc.add(curr_scc)
         return scc
 
@@ -200,9 +200,3 @@ class DirectedGraph(Graph):
 
     def kruskal(self):
         raise Exception("For directed graphs, use minimum_spanning_tree(vertex) instead.")
-
-
-vertices = [0, 1, 2, 3, 4]
-edges = [[0,1], [1,2], [2,3], [2, 4], [0, 4]]
-
-graph = DirectedGraph(vertices, edges)

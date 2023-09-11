@@ -2,7 +2,7 @@ from .BinarySearchTree import BinarySearchTree
 from .BipartiteGraphs import BipartiteGraph
 from .DirectedGraph import DirectedGraph
 from .Graph import Graph
-from .Heap import MinHeap
+from .MinHeap import MinHeap
 from .LinkedList import LinkedList
 from .PriorityQueue import PriorityQueue
 from .Queue import Queue

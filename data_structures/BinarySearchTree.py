@@ -155,7 +155,6 @@ class BinarySearchTree:
         while stack:
             if current is not None:
                 visited.append(current.data)
-
                 if current.right is not None:
                     stack.append(current.right)
                 current = current.left

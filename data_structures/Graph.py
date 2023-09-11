@@ -3,7 +3,7 @@ import collections
 from Queue import Queue
 from Stack import Stack
 from WeightedEdgeList import WeightedEdgeList
-from Heap import MinHeap
+from MinHeap import MinHeap
 from UnionFind import UnionFind
 
 

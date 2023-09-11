@@ -6,7 +6,7 @@ class MinHeap:
 
     def __init__(self, elements: list = None):
         self.array = [dict]  # index elements at 1
-        self._OFFSET = len(self.array)
+        self._START = len(self.array)
         self._fast_init(elements)
 
     def _fast_init(self, elements):
@@ -17,7 +17,7 @@ class MinHeap:
                 self.array.append(element)
 
             # runs O(2n) times
-            for i in range(len(self.array) // 2, self._OFFSET - 1, -1):
+            for i in range(len(self.array) // 2, self._START - 1, -1):
                 self._heapify_down(i)
 
     def _slow_init(self, elements):
@@ -28,7 +28,7 @@ class MinHeap:
 
     @property
     def size(self):
-        return len(self.array) - self._OFFSET
+        return len(self.array) - self._START
 
     def append(self, item, priority: int):
         element = {"item": item, "priority": priority}
@@ -41,23 +41,22 @@ class MinHeap:
 
         if self.get_parent(index)["priority"] > self.array[index]["priority"]:
             # Swap values of parent and child elements
-            self._swap_elements(index, self._parent_index(index))
+            self._swap(index, self._parent_index(index))
             self._heapify_up(self._parent_index(index))
 
-    def _swap_elements(self, i1: int, i2: int):
+    def _swap(self, i1: int, i2: int):
         self.array[i1], self.array[i2] = self.array[i2], self.array[i1]
 
     def poll(self):
         return self.poll_object()["item"]
 
     def poll_object(self):
-        top = self.array[self._OFFSET].copy()
+        min_object = self.array[self._START]
         # Swap values of first and last elements
-        self._swap_elements(1, len(self.array) - 1)
+        self._swap(self._START, len(self.array) - 1)
         self.array.pop(len(self.array) - 1)
-
-        self._heapify_down(1)
-        return top
+        self._heapify_down(self._START)
+        return min_object
 
     def _heapify_down(self, index: int):
         if self._is_leaf(index):
@@ -74,7 +73,7 @@ class MinHeap:
             smallest = right
 
         if smallest != index:
-            self._swap_elements(index, smallest)
+            self._swap(index, smallest)
             self._heapify_down(smallest)
 
     def _is_leaf(self, index: int) -> bool:
@@ -110,9 +109,9 @@ class MinHeap:
 
     def get_sort(self):
         pq = PriorityQueue()
-        for _ in range(self._OFFSET, len(self.array), 1):
+        for _ in range(self._START, len(self.array), 1):
             # Swap values of first and last elements
-            self._swap_elements(1, len(self.array) - 1)
+            self._swap(1, len(self.array) - 1)
             self._heapify_down(1)
             item = self.array.pop(1)
             pq.enqueue(item["item"], item["priority"])
@@ -120,7 +119,7 @@ class MinHeap:
 
     def peek(self):
         if not self.size == 0:
-            return self.array[self._OFFSET]
+            return self.array[self._START]
         else:
             raise IndexError("Heap is empty.")
 
