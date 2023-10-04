@@ -14,7 +14,7 @@ class DirectedGraph(Graph):
             "exit": -1
         } for _ in range(len(self.vertices))]
 
-    def _reset_edge_class():
+    def _reset_edge_class(self):
         self.edge_class = {
             "tree": [],
             "back": [],

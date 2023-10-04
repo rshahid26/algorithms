@@ -1,7 +1,7 @@
 def get_pascals_triangle(numRows: int):
     memo = [[0] * (i + 1) for i in range(numRows)]
 
-    def choose(n, k):
+    def choose(n: int, k: int):
         if k == 0 or k == n:
             return 1
         elif memo[n][k] != 0:
