@@ -1,4 +1,4 @@
-from Queue import Queue
+from .Queue import Queue
 
 
 class PriorityQueue(Queue):

@@ -1,6 +1,6 @@
 import collections
 
-from Graph import Graph
+from .Graph import Graph
 
 
 class DirectedGraph(Graph):

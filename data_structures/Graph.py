@@ -1,10 +1,10 @@
 import collections
 
-from Queue import Queue
-from Stack import Stack
-from WeightedEdgeList import WeightedEdgeList
-from MinHeap import MinHeap
-from UnionFind import UnionFind
+from .Queue import Queue
+from .Stack import Stack
+from .WeightedEdgeList import WeightedEdgeList
+from .MinHeap import MinHeap
+from .UnionFind import UnionFind
 
 
 class Graph:
@@ -62,7 +62,7 @@ class Graph:
     def get_degree_of(self, vertex):
         for i in range(len(self.vertices)):
             if self.vertices[i] == vertex:
-                return self.adjacency_list[i].get_length()
+                return self.adjacency_list[i].degree
 
     def get_neighbors_of(self, vertex):
         for i in range(len(self.vertices)):

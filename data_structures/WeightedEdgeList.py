@@ -6,7 +6,6 @@ class Node:
 
 
 class WeightedEdgeList:
-
     def __init__(self, data=None, weight: int = None):
         if data is not None:
             self.head = Node(data, weight)
@@ -14,6 +13,10 @@ class WeightedEdgeList:
         else:
             self.head = None
             self._length = 0
+
+    @property
+    def degree(self):
+        return self._length
 
     def append(self, data, weight: int = None) -> None:
         if self.head is None:
@@ -47,10 +50,7 @@ class WeightedEdgeList:
                 self._length -= 1
             else:
                 current = current.next
-
-    @property
-    def degree(self):
-        return self._length
+        self._length -= 1
 
     def print(self) -> None:
         current = self.head

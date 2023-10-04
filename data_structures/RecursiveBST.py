@@ -145,14 +145,3 @@ class RecursiveBST:
             self.post_order(node.right, result)
             result.append(node.data)
         return result
-
-
-bst_list = [14, 3, 22, 1, 7, 17, 30]
-bst = RecursiveBST()
-for i in bst_list:
-    bst.append(i)
-
-print(bst.in_order())
-print(bst.root.left.left.parent.parent.data)
-
-

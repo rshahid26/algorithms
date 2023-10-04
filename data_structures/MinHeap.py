@@ -1,5 +1,5 @@
 import math
-from PriorityQueue import PriorityQueue
+from .PriorityQueue import PriorityQueue
 
 
 class MinHeap:

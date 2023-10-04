@@ -1,34 +1,29 @@
+from .LinkedList import LinkedList
+
+
 class Queue:
     def __init__(self):
-        self.queue = []
+        self.queue = LinkedList()
 
-    def enqueue(self, item, priority: int = 0):
-        self.queue.append(item)
+    def append(self, item, priority: int = 0):
+        self.queue.prepend(item)
 
-    def dequeue(self):
-        if not self.is_empty():
-            return self.queue.pop(0)
-        else:
+    def popleft(self):
+        if self.is_empty():
             raise IndexError("Queue is empty.")
+        return self.queue.remove_index(0)
 
     def peek(self):
-        if not self.is_empty():
-            return self.queue[0]
-        else:
+        if self.is_empty():
             raise IndexError("Queue is empty.")
-
-    def back(self):
-        if not self.is_empty():
-            return self.queue[len(self.queue) - 1]
-        else:
-            raise IndexError("Queue is empty.")
+        return self.queue.get_index(0)
 
     def is_empty(self):
-        return len(self.queue) == 0
+        return self.queue.length == 0
 
     def print(self):
-        print(self.queue)
+        self.queue.print()
 
     @property
     def size(self) -> int:
-        return len(self.queue)
+        return self.queue.length

@@ -203,13 +203,3 @@ class BinarySearchTree:
                 self.print_tree(node.right, level + 1, "R: ")
             else:
                 print(" " * ((level + 1) * 4) + "R: ")
-
-
-bst = BinarySearchTree()
-for i in [14, 3, 22, 1, 7, 17, 30, 80]:
-    bst.append(i)
-
-bst.print_tree()
-print("Inorder", bst.in_order())
-print("Preorder", bst.pre_order())
-print("Postorder", bst.post_order())
