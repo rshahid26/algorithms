@@ -7,17 +7,20 @@ class DirectedGraph(Graph):
 
     def __init__(self, vertices: list = None, edges: list = None):
         super().__init__(vertices, edges)
+        self._reset_edge_class()
+        self._timer = 0
+        self._time = [{
+            "entry": -1,
+            "exit": -1
+        } for _ in range(len(self.vertices))]
+
+    def _reset_edge_class():
         self.edge_class = {
             "tree": [],
             "back": [],
             "forward": [],
             "cross": [],
         }
-        self._timer = 0
-        self._time = [{
-            "entry": -1,
-            "exit": -1
-        } for _ in range(len(self.vertices))]
 
     def add_edge(self, edge_):
         edge, weight = self._parse_edge(edge_)
@@ -29,16 +32,15 @@ class DirectedGraph(Graph):
 
     def dfs(self, root_vertex, marked: list = None):
         marked = list(False for _ in self.vertices) if marked is None else marked
-        history = []  # Order in which the dfs trees from each vertex is fully exhausted
-
+        history = []  # postorder traversal history
         self.parents = [-1] * len(self.vertices)
+        self._reset_edge_class()
         self._timer = 0
 
         self._recursive_dfs(root_vertex, marked, history)
         return history
 
     def _recursive_dfs(self, vertex: int, marked: list = None, history: list = None):
-        """The history list has a different meaning here than in iterative dfs"""
         marked[vertex] = "visited"
         self._timer += 1
         self._time[vertex]["entry"] = self._timer
@@ -64,7 +66,7 @@ class DirectedGraph(Graph):
             self.edge_class["tree"].append([source, target])
 
         # Ancestor in the dfs tree
-        elif marked[target] == "visited" and not marked[target] == "processed":
+        elif marked[target] == "visited":
             self.edge_class["back"].append([source, target])
 
         elif marked[target] == "processed" and (self._time[target]["entry"] > self._time[source]["entry"]):

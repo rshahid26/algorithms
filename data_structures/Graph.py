@@ -102,7 +102,7 @@ class Graph:
         visited = [False] * len(self.vertices) if visited is None else visited
         self.parents = [-1 for _ in range(len(self.vertices))]
 
-        history = []
+        history = [] # preorder traversal history
         stack = Stack()
         stack.push(root_vertex)
 
