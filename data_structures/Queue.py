@@ -2,11 +2,11 @@ from .LinkedList import LinkedList
 
 
 class Queue:
-    def __init__(self):
-        self.queue = LinkedList()
+    def __init__(self, values=None):
+        self.queue = LinkedList(values)
 
-    def append(self, item, priority: int = 0):
-        self.queue.prepend(item)
+    def append(self, value, priority: int = 0):
+        self.queue.prepend(value)
 
     def popleft(self):
         if self.is_empty():
@@ -25,5 +25,5 @@ class Queue:
         self.queue.print()
 
     @property
-    def size(self) -> int:
+    def length(self) -> int:
         return self.queue.length

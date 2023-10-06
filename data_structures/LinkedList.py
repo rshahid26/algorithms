@@ -5,17 +5,17 @@ class Node:
 
 
 class LinkedList:
-    def __init__(self, val=None):
-        if val is None:
+    def __init__(self, values=None):
+        if values is None:
             self.head = None
             self._length = 0
-        elif type(val) == list:
-            self.head = Node(val[0])
+        elif type(values) == list:
+            self.head = Node(values[0])
             self._length = 1
-            for i in range(1, len(val)):
-                self.append(val[i])
+            for i in range(1, len(values)):
+                self.append(values[i])
         else:
-            self.head = Node(val)
+            self.head = Node(values)
             self._length = 1
 
     @property
@@ -76,10 +76,10 @@ class LinkedList:
         if self.head is None or index < 0 or index >= self._length:
             return None
 
+        self._length -= 1
         if index == 0:
             removed_value = self.head.val
             self.head = self.head.next
-            self._length -= 1
             return removed_value
 
         current = self.head
@@ -90,7 +90,6 @@ class LinkedList:
             
         removed = current.next.val
         current.next = current.next.next
-        self._length -= 1
         return removed
             
     def print(self) -> None:

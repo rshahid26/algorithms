@@ -1,7 +1,5 @@
 class Node:
     """Represents a node in a binary tree."""
-    size = 0
-
     def __init__(self, data=None, parent=None, right=None, left=None):
         self.data = data
         self.parent = parent

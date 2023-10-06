@@ -1,25 +1,66 @@
 from .Queue import Queue
+from .LinkedList import Node
 
 
 class PriorityQueue(Queue):
     def __init__(self):
         super().__init__()
-        self.queue = []
 
-    def enqueue(self, item, priority: int):
+    def append(self, value, priority: int = 0):
+        self.print()
         # Using a selection sort with naive data structure = O(n) sorted insert
-        item = {"item": item, "priority": priority}
-        for i in range(len(self.queue)):
-            if self.queue[i]["priority"] > priority:
-                self.queue.insert(i, item)
+        element = {"value": value, "priority": priority}
+        current = self.queue.head
+
+        if current is None:
+            self.queue.append(element)
+            return
+        if priority < current.val["priority"]:
+            self.queue.prepend(element)
+            return
+
+        while current.next is not None:
+            if current.next.val["priority"] > priority:
+                temp = current.next
+                new_node = Node(element)
+                current.next = new_node
+                new_node.next = temp
+                self.queue._length += 1
                 return
-        self.queue.append(item)
+            current = current.next
+        self.queue.append(element)
 
-    def dequeue(self):
-        return self.queue.pop(0)["item"]
+    def popleft(self):
+        return super().popleft()["value"]
 
+    def list_values(self) -> list:
+        values = []
+        current = self.queue.head
+        while current is not None:
+            values.append(current.val["value"])
+            current = current.next
+        return values
+    
+    def list_priorities(self) -> list:
+        priorities = []
+        current = self.queue.head
+        while current is not None:
+            priorities.append(current.val["priority"])
+            current = current.next
+        return priorities
+    
+    def print(self):
+        current = self.queue.head
+        while current is not None:
+            print(current.val["value"], end=" ")
+            current = current.next
+        print()
+    
     def print_elements(self):
-        for element in self.queue:
-            print(element["item"], end=" ")
+        current = self.queue.head
+        while current is not None:
+            print(current.val, end=" ")
+            current = current.next
+        print()
 
 

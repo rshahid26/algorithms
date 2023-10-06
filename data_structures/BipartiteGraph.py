@@ -15,7 +15,7 @@ class BipartiteGraph(Graph):
         colors = ["Uncolored"] * len(self.vertices)
         processed = [False] * len(self.vertices)
 
-        while queue.size != 0:
+        while queue.length != 0:
             vertex = queue.popleft()
             colors[vertex] = "White" if colors[vertex] == "Uncolored" else colors[vertex]
 
