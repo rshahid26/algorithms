@@ -47,10 +47,10 @@ class MinHeap:
     def _swap(self, i1: int, i2: int):
         self.array[i1], self.array[i2] = self.array[i2], self.array[i1]
 
-    def poll(self):
-        return self.poll_object()["item"]
+    def pop(self):
+        return self.pop_object()["item"]
 
-    def poll_object(self):
+    def pop_object(self):
         min_object = self.array[self._START]
         # Swap values of first and last elements
         self._swap(self._START, len(self.array) - 1)
@@ -108,14 +108,10 @@ class MinHeap:
         return self.array[2 * index + 1]
 
     def get_sort(self):
-        pq = PriorityQueue()
-        for _ in range(self._START, len(self.array), 1):
-            # Swap values of first and last elements
-            self._swap(1, len(self.array) - 1)
-            self._heapify_down(1)
-            item = self.array.pop(1)
-            pq.enqueue(item["item"], item["priority"])
-        return pq
+        elements = []
+        while self.size:
+            elements.append(self.pop())
+        return elements
 
     def peek(self):
         if not self.size == 0:

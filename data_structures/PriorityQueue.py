@@ -7,7 +7,6 @@ class PriorityQueue(Queue):
         super().__init__()
 
     def append(self, value, priority: int = 0):
-        self.print()
         # Using a selection sort with naive data structure = O(n) sorted insert
         element = {"value": value, "priority": priority}
         current = self.queue.head
@@ -62,5 +61,3 @@ class PriorityQueue(Queue):
             print(current.val, end=" ")
             current = current.next
         print()
-
-

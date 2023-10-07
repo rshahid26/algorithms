@@ -184,7 +184,7 @@ class Graph:
         queue = MinHeap()
         queue.append(source, 0)
         while queue.size != 0:
-            vertex, distance = queue.poll_object().values()
+            vertex, distance = queue.pop_object().values()
             if not processed[vertex]:
                 processed[vertex] = True
 
@@ -289,8 +289,8 @@ class Graph:
 
         def get_minimum_edge():
             while processed[heap.peek()["item"][1]]:
-                heap.poll_object()
-            return heap.poll_object()
+                heap.pop_object()
+            return heap.pop_object()
 
         vertex = vertex if vertex is not None else self.vertices[0]
         processed = [False] * len(self.vertices)
@@ -320,8 +320,7 @@ class Graph:
         return list(zip(self.edges, self.edge_weights))
 
     def get_sorted_edges(self):
-        pq = MinHeap(self._edge_set()).get_sort().queue
-        return [element["item"] for element in pq]
+        return MinHeap(self._edge_set()).get_sort()
 
     def kruskal(self):    
         sorted_edges = self.get_sorted_edges()
