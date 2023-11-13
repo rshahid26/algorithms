@@ -1,6 +1,5 @@
 import collections
 
-from .Queue import Queue
 from .Stack import Stack
 from .WeightedEdgeList import WeightedEdgeList
 from .MinHeap import MinHeap
@@ -72,7 +71,7 @@ class Graph:
                 current = self.adjacency_list[i].head
 
                 while current is not None:
-                    neighbors.append(current.data)
+                    neighbors.append(current.val)
                     current = current.next
                 return neighbors
 
@@ -89,10 +88,10 @@ class Graph:
 
             current = self.adjacency_list[vertex].head
             while current is not None:
-                if not visited[current.data]:
-                    queue.append(current.data)
-                    self.parents[current.data] = vertex
-                    visited[current.data] = True
+                if not visited[current.val]:
+                    queue.append(current.val)
+                    self.parents[current.val] = vertex
+                    visited[current.val] = True
                 current = current.next
 
             history.append(vertex)
@@ -112,10 +111,10 @@ class Graph:
 
             current = self.adjacency_list[vertex].head
             while current is not None:
-                if not visited[current.data]:
-                    stack.push(current.data)
-                    self.parents[current.data] = vertex
-                    visited[current.data] = True
+                if not visited[current.val]:
+                    stack.push(current.val)
+                    self.parents[current.val] = vertex
+                    visited[current.val] = True
                 current = current.next
 
             history.append(vertex)
@@ -133,9 +132,9 @@ class Graph:
         current = self.adjacency_list[root_vertex].head
 
         while current is not None:
-            if not marked[current.data]:
-                history.append(current.data)
-                self.__undirected_recursive_dfs(current.data, marked, history)
+            if not marked[current.val]:
+                history.append(current.val)
+                self.__undirected_recursive_dfs(current.val, marked, history)
             current = current.next
 
         return marked
@@ -167,7 +166,7 @@ class Graph:
         for i in range(len(path) - 1):
             current = self.adjacency_list[path[i]].head
             while current is not None:
-                if current.data == path[i + 1]:
+                if current.val == path[i + 1]:
                     weight += current.weight
                     break
                 current = current.next
@@ -190,11 +189,11 @@ class Graph:
 
                 current = self.adjacency_list[vertex].head
                 while current is not None:
-                    if not processed[current.data]:
-                        if distances[current.data] > distance + current.weight:
-                            self.parents[current.data] = vertex
-                            distances[current.data] = distance + current.weight
-                            queue.append(current.data, distances[current.data])
+                    if not processed[current.val]:
+                        if distances[current.val] > distance + current.weight:
+                            self.parents[current.val] = vertex
+                            distances[current.val] = distance + current.weight
+                            queue.append(current.val, distances[current.val])
                     current = current.next
         return self._find_path(source, target)
 
@@ -233,12 +232,12 @@ class Graph:
 
             if not processed[vertex]:
                 while current is not None:
-                    if not processed[current.data]:
-                        stack.push(current.data)
-                        self.parents[current.data] = vertex
+                    if not processed[current.val]:
+                        stack.push(current.val)
+                        self.parents[current.val] = vertex
                     # back edges lead to already processed vertices
-                    elif self.parents[vertex] != current.data:
-                        back_edges.append([vertex, current.data])
+                    elif self.parents[vertex] != current.val:
+                        back_edges.append([vertex, current.val])
                     current = current.next
 
             processed[vertex] = True
@@ -268,12 +267,12 @@ class Graph:
 
             if not processed[vertex]:
                 while current is not None:
-                    if not processed[current.data]:
-                        stack.push(current.data)
-                        self.parents[current.data] = vertex
-                    elif self.parents[vertex] != current.data:
+                    if not processed[current.val]:
+                        stack.push(current.val)
+                        self.parents[current.val] = vertex
+                    elif self.parents[vertex] != current.val:
                         cycles.append([vertex] +
-                                      self.get_dfs_path(self.parents[vertex], current.data) +
+                                      self.get_dfs_path(self.parents[vertex], current.val) +
                                       [vertex])
                     current = current.next
                 processed[vertex] = True
@@ -283,8 +282,8 @@ class Graph:
         def add_edges_to_heap(v):
             current = self.adjacency_list[v].head
             while current is not None:
-                if not processed[current.data]:
-                    heap.append([v, current.data], current.weight)
+                if not processed[current.val]:
+                    heap.append([v, current.val], current.weight)
                 current = current.next
 
         def get_minimum_edge():

@@ -1,52 +1,51 @@
 class Node:
     """Represents a node in a binary tree."""
-    def __init__(self, data=None, parent=None, right=None, left=None):
-        self.data = data
+    def __init__(self, val=None, parent=None, right=None, left=None):
+        self.val = val
         self.parent = parent
         self.right = right
         self.left = left
 
 
-class BinarySearchTree:
-    """A binary search tree with non-recursive methods."""
+class IterativeBST:
+    """A binary search tree with iterative methods."""
+    def __init__(self, val=None):
+        self.root = Node(val=None)
 
-    def __init__(self, data=None):
-        self.root = Node(data)
-
-    def append(self, data) -> None:
-        """Inserts a new node with given data into the binary tree."""
-        if self.root.data is None:
-            self.root.data = data
+    def append(self, val) -> None:
+        """Inserts a new node with given val into the binary tree."""
+        if self.root.val is None:
+            self.root.val = val
             return
 
         current = self.root
         while True:
-            if data > current.data:
+            if val > current.val:
                 if current.right is None:
-                    current.right = Node(data, current)
+                    current.right = Node(val, current)
                     return
                 current = current.right
             else:
                 if current.left is None:
-                    current.left = Node(data, current)
+                    current.left = Node(val, current)
                     return
                 current = current.left
 
-    def find_node(self, data):
+    def find_node(self, val):
         current = self.root
         while current is not None:
-            if current.data == data:
+            if current.val == val:
                 return current
 
-            if data > current.data:
+            if val > current.val:
                 current = current.right
             else:
                 current = current.left
         return None
 
-    def delete(self, data):
-        """Deletes a node with the given data from the binary tree"""
-        to_delete = self.find_node(data)
+    def delete(self, val):
+        """Deletes a node with the given val from the binary tree"""
+        to_delete = self.find_node(val)
         if to_delete is None:
             return
         elif to_delete == self.root:
@@ -60,7 +59,7 @@ class BinarySearchTree:
                 self.replace_node(to_delete, to_delete.left or to_delete.right)
             elif num_children == 2:
                 successor = self.get_successor(to_delete)
-                to_delete.data = successor.data
+                to_delete.val = successor.val
                 self.replace_node(successor, successor.right)
 
     def _delete_root(self):
@@ -72,7 +71,7 @@ class BinarySearchTree:
             self.root = self.root.left or self.root.right
         elif num_children == 2:
             successor = self.get_successor(self.root)
-            self.root.data = successor.data
+            self.root.val = successor.val
             self.replace_node(successor, successor.right)
 
     def replace_node(self, child: Node, new_child: Node = None) -> None:
@@ -120,7 +119,7 @@ class BinarySearchTree:
 
         current = self._get_min_node()
         while current is not None:
-            left_most.append(current.data)
+            left_most.append(current.val)
             current = self.get_successor(current)
 
         return left_most
@@ -136,7 +135,7 @@ class BinarySearchTree:
                 current = current.left
             else:
                 current = stack.pop()
-                order.append(current.data)
+                order.append(current.val)
                 current = current.right
         return order
 
@@ -150,7 +149,7 @@ class BinarySearchTree:
                 stack.append(current.right)
             if current.left:
                 stack.append(current.left)
-            order.append(current.data)
+            order.append(current.val)
         return order
 
     def post_order(self):
@@ -163,12 +162,12 @@ class BinarySearchTree:
                 stack.append(current.left)
             if current.right:
                 stack.append(current.right)
-            order.append(current.data)
+            order.append(current.val)
         order.reverse()
         return order
 
     def get_min(self):
-        return self._get_min_node().data
+        return self._get_min_node().val
 
     def _get_min_node(self):
         current = self.root
@@ -177,7 +176,7 @@ class BinarySearchTree:
         return current
 
     def get_max(self):
-        return self._get_max_node().data
+        return self._get_max_node().val
 
     def _get_max_node(self):
         current = self.root
@@ -185,19 +184,19 @@ class BinarySearchTree:
             current = current.right
         return current
 
-    def print_tree(self, node=None, level=0, prefix="C: "):
+    def print(self, node=None, level=0, prefix="C: "):
         """Recursive function to print the tree."""
         if node is None:
             node = self.root
 
-        print(" " * (level * 4) + prefix + str(node.data))
+        print(" " * (level * 4) + prefix + str(node.val))
         if node.left is not None or node.right is not None:
             if node.left is not None:
-                self.print_tree(node.left, level + 1, "L: ")
+                self.print(node.left, level + 1, "L: ")
             else:
                 print(" " * ((level + 1) * 4) + "L: ")
 
             if node.right is not None:
-                self.print_tree(node.right, level + 1, "R: ")
+                self.print(node.right, level + 1, "R: ")
             else:
                 print(" " * ((level + 1) * 4) + "R: ")

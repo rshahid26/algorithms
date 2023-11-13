@@ -21,9 +21,9 @@ class BipartiteGraph(Graph):
 
             current = self.adjacency_list[vertex].head
             while current is not None:
-                if not processed[current.data]:
-                    queue.append(current.data)
-                    colors[current.data] = "Black" if colors[vertex] == "White" else "White"
+                if not processed[current.val]:
+                    queue.append(current.val)
+                    colors[current.val] = "Black" if colors[vertex] == "White" else "White"
                 current = current.next
             processed[vertex] = True
         return colors

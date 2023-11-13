@@ -5,6 +5,13 @@ bst = RecursiveBST()
 for i in bst_list:
     bst.append(i)
 
-print(bst.in_order())
-print(bst.root.left.left.parent.parent.data)
+bst.print()
+print("inorder:", bst.in_order())
+print("preorder:", bst.pre_order())
+print("postorder:", bst.post_order())
+
+print()
+print("successor of", bst.root.val, "is", bst.get_successor(bst.root))
+print("predecessor of", bst.root.val, "is", bst.get_predecessor(bst.root))
+
 

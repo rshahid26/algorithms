@@ -1,4 +1,4 @@
-from .BinarySearchTree import BinarySearchTree
+from .IterativeBST import IterativeBST
 from .BipartiteGraph import BipartiteGraph
 from .DirectedGraph import DirectedGraph
 from .Graph import Graph

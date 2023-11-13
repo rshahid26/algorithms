@@ -47,11 +47,11 @@ class DirectedGraph(Graph):
 
         current = self.adjacency_list[vertex].head
         while current is not None:
-            if not marked[current.data]:
-                self.parents[current.data] = vertex
-                self._recursive_dfs(current.data, marked, history)
+            if not marked[current.val]:
+                self.parents[current.val] = vertex
+                self._recursive_dfs(current.val, marked, history)
 
-            self._classify_edge(vertex, current.data, marked)
+            self._classify_edge(vertex, current.val, marked)
             current = current.next
 
         marked[vertex] = "processed"
@@ -132,7 +132,7 @@ class DirectedGraph(Graph):
             current = vertex.head
 
             while current is not None:
-                is_child[current.data] = True
+                is_child[current.val] = True
                 current = current.next
 
         for i in range(len(is_child)):
