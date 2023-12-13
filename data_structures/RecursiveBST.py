@@ -92,20 +92,20 @@ class RecursiveBST:
             return self._get_predecessor_recursive(node.right)
 
     def get_min(self):
-        return self._recursive_get_min(self.root)
+        return self._recursive_get_min(self.root).val
 
     def _recursive_get_min(self, node):
         if node.left is None:
-            return node.val
+            return node
         else:
             return self._recursive_get_min(node.left)
 
     def get_max(self):
-        return self._recursive_get_max(self.root)
+        return self._recursive_get_max(self.root).val
 
     def _recursive_get_max(self, node):
         if node.right is None:
-            return node.val
+            return node
         else:
             return self._recursive_get_max(node.right)
 

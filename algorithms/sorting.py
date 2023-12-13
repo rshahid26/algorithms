@@ -1,4 +1,3 @@
-import math
 import random
 
 
@@ -120,10 +119,3 @@ def quicksort(array: list):
         else:
             right_half.append(array[i])
     return quicksort(left_half) + [array[pivot]] * count + quicksort(right_half)
-
-array = [3, 5, 1, 2, 5, 8]
-print(quicksort(array))
-
-# test_string = "insertionsort"
-# print(sort_bf(array(test_string)))
-# print(selection_sort(array(test_string)))

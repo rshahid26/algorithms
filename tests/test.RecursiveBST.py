@@ -6,6 +6,10 @@ for i in bst_list:
     bst.append(i)
 
 bst.print()
+print("deleting root node", bst.root.val)
+bst.delete(bst.root.val)
+bst.print()
+
 print("inorder:", bst.in_order())
 print("preorder:", bst.pre_order())
 print("postorder:", bst.post_order())
