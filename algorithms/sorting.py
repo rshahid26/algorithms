@@ -1,62 +1,53 @@
 import random
-
-
-# Backward traversal
-def sort_bf(array):
-    """
-    Sorts in worst case O(n^2) by iterating through an array
-    and bringing the greatest element [j] < i to the front
-    with each new element i.
-    """
-    for i in range(len(array)):
-        for j in range(i):
-
-            if array[i] < array[j]:
-                array[i], array[j] = array[j], array[i]
-
-    return ''.join(array)
-
+from .partition import hoare_partition
 
 # Forward traversal
-def selection_sort(array):
+def selection_sort(array: list):
     """
-    Sorts all cases in O(n^2) by iterating through an array
-    and bringing the least element [j] > i to the back
-    with each new element i.
+    Sorts in O(n^2) worst case. Iterates forwards from j in [i, end)
+    and identifies the smallest element in this subarray. Then it swaps
+    it with the element at index i and continues.
     """
     for i in range(len(array)):
+        min_index = i
+
         for j in range(i, len(array), 1):
+            if array[j] < array[min_index]:
+                min_index = j
 
-            if array[j] < array[i]:
-                array[i], array[j] = array[j], array[i]
+        array[i], array[min_index] = array[min_index], array[i]
 
-    if isinstance(array, str):
-        return ''.join(array)
     return array
 
 
-def insertion_sort(array):
+def insertion_sort(array: list):
     """
-    Sorts in worse case O(n^2) by iterating through an array
-    and shifting all greater elements [j] < i to [j+1] until
-    the right spot for the element i is found.
+    Sorts in O(n^2) worst case. Iterates backwards from j in [0, i)
+    and shifts elements to j + 1 until the elements are smaller than
+    array[i]. Then, it inserts array[i] into the new hole.
+
+    Like selection sort, after i passes though the array, the first
+    i elements are in sorted order. However, unlike selection sort,
+    these elements are not the i smallest elements (yet).
     """
     for i in range(1, len(array)):
-        key = array[i]
+        temp = array[i]
         j = i - 1
 
-        while j >= 0 and key < array[j]:
+        while j >= 0 and temp < array[j]:
             array[j + 1] = array[j]
             j -= 1
 
-        array[j + 1] = key
-    return ''.join(array)
+        array[j + 1] = temp
+    return array
 
 
 def mergesort(array: list, left: int = None, right: int = None):
     """
-    Sorts an array by repeatedly dividing it in half. The two
-    pieces are then combined  in O(n) time using two pointers.
+    Sorts an array by repeatedly dividing it in half until it is
+    composed of n subarrays of size 1. Then, it repeatedly combines them
+    into n/2 sorted subarrays in O((2^k)n/(2^k)) = O(n) time.
+
     T(n) = 2T(ceil(n/2)) + O(n) = O(nlogn) time complexity.
     """
     if left is None or right is None:
@@ -75,10 +66,10 @@ def merge(a1: list, a2: list):
     array = []
     i, j = 0, 0
     while i < len(a1) or j < len(a2):
-        if i < len(a1) and (j >= len(a2) and a1[i] <= a2[j]):
+        if j >= len(a2) or (i < len(a1) and a1[i] <= a2[j]):
             array.append(a1[i])
             i += 1
-        elif j < len(a2):
+        else:
             array.append(a2[j])
             j += 1
     return array
@@ -102,20 +93,40 @@ def merge_in_place(array, start, mid, end):
             j += 1
 
 
-# Simple O(nlogn) quicksort
-def quicksort(array: list):
+# O(1) space
+def quicksort(array: list, left: int = None, right: int = None):
+    """
+    Sorts an array by partitioning its elements into two subarrays,
+    one of elements < some pivot and one of elements > pivot. These
+    subarrays can now be sorted individually.
+
+    T(n) = 2T(ceil((n-1)/2)) + O(n) = O(nlogn) best case
+    T(n) = T(n - 1) + O(n) = O(n^2) worst case
+    """
+    if left is None or right is None:
+        left, right = 0, len(array) - 1
+
+    if left < right:
+        pivot_index = hoare_partition(array, left, right)
+        quicksort(array, left, pivot_index - 1)
+        quicksort(array, pivot_index + 1, right)
+    return array
+
+
+
+def naive_quicksort(array: list):
     if len(array) <= 1:
         return array
-    pivot = random.randint(0, len(array) - 1)
-    count = 0
 
-    left_half = []
-    right_half = []
-    for i in range(len(array)):
-        if i == pivot:
+    # O(n) space partition scheme
+    pivot, count = array[random.randint(0, len(array) - 1)], 1
+    left_half, right_half = [], []
+    for num in array:
+        if num == pivot:
             count += 1
-        elif array[i] < array[pivot]:
-            left_half.append(array[i])
+        elif num < pivot:
+            left_half.append(num)
         else:
-            right_half.append(array[i])
-    return quicksort(left_half) + [array[pivot]] * count + quicksort(right_half)
+            right_half.append(num)
+
+    return naive_quicksort(left_half) + [pivot] * count + naive_quicksort(right_half)

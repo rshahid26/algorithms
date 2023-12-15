@@ -41,10 +41,6 @@ class AVLTree(RecursiveBST):
         node.height = 1 + max(self.height(node.left), self.height(node.right))
         return self.balance(node)
 
-    def delete(self, val):
-        """Deletes a node with the given val from the tree in O(logn) time."""
-        self.root = self._delete_recursive(self.root, val)
-
     def _delete_recursive(self, node, val):
         node = super()._delete_recursive(node, val)
         if node is not None:

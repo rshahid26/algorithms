@@ -1,19 +1,29 @@
-import math
+# inclusive bounds
+def binary_search(array: list, target):
+    left, right = 0, len(array) - 1
 
-
-def binary_search(array, target):
-    low = 0
-    high = len(array) - 1
-
-    while low <= high:
-        mid = math.floor((low + high) / 2)
-
+    while left <= right:
+        mid = (left + right) // 2
         if target == array[mid]:
             return mid
-
-        if target < array[mid]:
-            high = mid - 1
+        elif target < array[mid]:
+            right = mid - 1
         else:
-            low = mid + 1
+            left = mid + 1
+    return -1
+
+
+# exclusive right bound
+def binary_search2(array: list, target):
+    left, right = 0, len(array)
+
+    while left < right:
+        mid = (left + right) // 2
+        if target == array[mid]:
+            return mid
+        elif target < array[mid]:
+            right = mid
+        else:
+            left = mid + 1
     return -1
 
