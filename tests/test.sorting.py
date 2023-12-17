@@ -1,14 +1,15 @@
-from algorithms import mergesort, quicksort, quickselect
+from algorithms import mergesort, quicksort, quickselect, kth_smallest, kth_largest
 
-
+# Test array
 array = [3, 5, 1, 2, 5, 8, 34, 1, 12, 19, 45, 1, 0, -12, 1]
-print(mergesort(array))
-print(quicksort(array))
+array_length = len(array)
 
-print()
-array = [0, 1, 2, 3, 9, 4, 5, 6, 7, 8]
-print(array, "length", len(array))
-print(quicksort(array))
+print("Mergesort:", mergesort(array.copy()))
+print("Quicksort:", quicksort(array.copy()))
 
-for i in range(len(array)):
-    print(quickselect(array, i + 1), "is the", i + 1, "th smallest integer (1-indexed)")
+# Test kth_smallest and kth_largest using Quickselect
+print("\nTesting 1-indexed kth smallest and kth largest elements:")
+for i in range(1, array_length + 1):
+    kth_smallest_element = kth_smallest(array.copy(), i)
+    kth_largest_element = kth_largest(array.copy(), i)
+    print(f"{i}th smallest element: {kth_smallest_element}, {i}th largest element: {kth_largest_element}")
