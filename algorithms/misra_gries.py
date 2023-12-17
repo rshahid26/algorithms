@@ -20,5 +20,3 @@ def misra_gries(a: list, k: int) -> list:
             solutions.append(majority)
 
     return solutions
-
-# a = [1, 5, 1, 1, 6, 3, 5, 1, 3, 3]  # length 9

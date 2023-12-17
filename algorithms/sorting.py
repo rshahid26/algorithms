@@ -1,5 +1,5 @@
 import random
-from .partition import hoare_partition
+from .partition import hoare_partition, lomuto_partition
 
 # Forward traversal
 def selection_sort(array: list):
@@ -107,11 +107,10 @@ def quicksort(array: list, left: int = None, right: int = None):
         left, right = 0, len(array) - 1
 
     if left < right:
-        pivot_index = hoare_partition(array, left, right)
-        quicksort(array, left, pivot_index - 1)
+        pivot_index = hoare_partition(array, left, right) # hoare partitoning 3x faster on average than lomuto
+        quicksort(array, left, pivot_index) # - 1 for lomuto since pivot is in final location, ensures subarrays get smaller
         quicksort(array, pivot_index + 1, right)
     return array
-
 
 
 def naive_quicksort(array: list):
