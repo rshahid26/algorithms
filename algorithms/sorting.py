@@ -96,9 +96,10 @@ def merge_in_place(array, start, mid, end):
 # O(1) space
 def quicksort(array: list, left: int = None, right: int = None):
     """
-    Sorts an array by partitioning its elements into two subarrays,
-    one of elements < some pivot and one of elements > pivot. These
-    subarrays can now be sorted individually.
+    Sorts an array by partitioning its elements into two subarrays, one
+    of elements <= some pivot and one of elements => pivot. By including the
+    pivot index in the recursive calls, the pivot number(s) will bridge the
+    partition s.t. the subarrays can still be sorted individually.
 
     T(n) = 2T(ceil((n-1)/2)) + O(n) = O(nlogn) best case
     T(n) = T(n - 1) + O(n) = O(n^2) worst case
@@ -107,8 +108,8 @@ def quicksort(array: list, left: int = None, right: int = None):
         left, right = 0, len(array) - 1
 
     if left < right:
-        pivot_index = hoare_partition(array, left, right) # hoare partitoning 3x faster on average than lomuto
-        quicksort(array, left, pivot_index) # - 1 for lomuto since pivot is in final location, ensures subarrays get smaller
+        pivot_index = hoare_partition(array, left, right)
+        quicksort(array, left, pivot_index) # - 1 for lomuto since pivot is in final location
         quicksort(array, pivot_index + 1, right)
     return array
 

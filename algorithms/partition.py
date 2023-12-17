@@ -1,11 +1,11 @@
 def lomuto_partition(array: list, left: int = 0, right: int = None):
     """
     Partition the subarray [left, right] in place such that:
-                     < pivot       pivot          > pivot
+                     < pivot       pivot         >= pivot
     [left, right] = [left, i] + array[right] + [i + 2, right]
 
-    By iterating from k in [left, right) and swapping array[k] to
-    array[i], the right-bound of the < subarray, if array[k] < pivot.
+    By iterating from j in [left, right) and swapping array[j] to
+    array[i], the right-bound of the < subarray, if array[j] < pivot.
     Finally, swap the pivot to its new location, array[i + 1].
     """
     if right is None:
@@ -14,10 +14,10 @@ def lomuto_partition(array: list, left: int = 0, right: int = None):
     pivot = array[right]
     i = left - 1
 
-    for k in range(left, right):
-        if array[k] < pivot:
+    for j in range(left, right):
+        if array[j] < pivot:
             i += 1
-            array[i], array[k] = array[k], array[i]
+            array[i], array[j] = array[j], array[i]
 
     array[i + 1], array[right] = array[right], array[i + 1]
     return i + 1
