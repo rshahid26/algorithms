@@ -41,12 +41,12 @@ def quickselect(array, kth: int):
     """
     Partition the array with Lomuto s.t. the integer at the pivot
     index is in its final sorted location. Then, array[pivot] is
-    the (pivot-index + 1)th smallest integer.
+    the (pivot_index + 1)th smallest integer.
     """
     def qs_lomuto(left: int, right: int):
         pivot_index = lomuto_partition(array, left, right)
         if kth == pivot_index + 1: # account for 1-indexed
-            return array[pivot_index] # guaranteed to terminate
+            return array[pivot_index]
         elif kth < pivot_index + 1:
             return qs_lomuto(left, pivot_index - 1)
         else:
@@ -58,14 +58,15 @@ def quickselect(array, kth: int):
     smallest integers of [left, right]) or else to the right.
     """
     def qs_hoare(left: int, right: int, kth: int = kth):
-        if left == right: # k is the smallest of 1
+        if left == right:
             return array[left]
 
         pivot_index = hoare_partition(array, left, right)
         left_size = pivot_index - left + 1
         if kth < left_size + 1: # account for 1-indexed
             return qs_hoare(left, pivot_index, kth)
-        else: # take out the (left_size) smaller numbers than k
+        else:
+            # the order-statistic is now the (kth - left_size) smallest
             return qs_hoare(pivot_index + 1, right, kth - left_size)
 
     if kth <= 0 or kth > len(array):
