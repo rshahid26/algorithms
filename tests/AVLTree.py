@@ -1,4 +1,4 @@
-from algorithms.sorting import quicksort
+from computer_science.sorting import quicksort
 from data_structures.AVLTree import AVLTree
 
 

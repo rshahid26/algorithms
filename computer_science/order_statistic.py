@@ -1,6 +1,6 @@
 # The kth order statistic of a list of numbers is the (1-indexed) kth smallest element.
 import heapq
-from algorithms import hoare_partition, lomuto_partition
+from computer_science import hoare_partition, lomuto_partition
 
 
 def kth_smallest(array: list, kth: int):

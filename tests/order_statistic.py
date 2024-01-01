@@ -1,4 +1,4 @@
-from algorithms import quickselect, kth_smallest, kth_largest
+from computer_science import quickselect, kth_smallest, kth_largest
 
 # Test array
 array = [0, -4, -7, 3, 0, 8, 2]
