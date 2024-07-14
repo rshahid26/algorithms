@@ -1,4 +1,5 @@
 from .RecursiveBST import RecursiveBST, Node
+
 class AVLNode(Node):
     def __init__(self, val=None, left=None, right=None, parent=None):
         super().__init__(val, left, right)
@@ -8,11 +9,10 @@ class AVLNode(Node):
     def bf(self):
         return AVLTree.height(self.right) - AVLTree.height(self.left)
 
-
 class AVLTree(RecursiveBST):
     def __init__(self, val=None):
         self.MAX_IMBALANCE = 1
-        self.root = Node(val)
+        self.root = AVLNode(val)
 
     @staticmethod
     def height(node: AVLNode):
@@ -22,30 +22,35 @@ class AVLTree(RecursiveBST):
         """Inserts a new node with given val into the binary tree in O(logn) time."""
         if self.root is None or self.root.val is None:
             self.root = AVLNode(val)
-        else:
-            self._append_recursive(self.root, val)
+            return
 
-    def _append_recursive(self, node: AVLNode, val):
-        if node is None:
-            return AVLNode(val)
+        def _append(node, val):
+            if node is None:
+                return AVLNode(val)
 
-        if val < node.val:
-            node.left = self._append_recursive(node.left, val)
-            node.left.parent = node
-        elif val > node.val:
-            node.right = self._append_recursive(node.right, val)
-            node.right.parent = node
-        else:
-            raise Exception("nodes must have unique values.")
+            if val < node.val:
+                node.left = _append(node.left, val)
+                node.left.parent = node
+            elif val > node.val:
+                node.right = _append(node.right, val)
+                node.right.parent = node
+            else:
+                raise Exception("nodes must have unique values.")
 
-        node.height = 1 + max(self.height(node.left), self.height(node.right))
-        return self.balance(node)
-
-    def _delete_recursive(self, node, val):
-        node = super()._delete_recursive(node, val)
-        if node is not None:
             node.height = 1 + max(self.height(node.left), self.height(node.right))
             return self.balance(node)
+
+        _append(self.root, val)
+
+    def delete(self, val):
+        """Deletes a node with the given val from the tree in O(logn) time."""
+        def _delete(node, val):
+            node = super()._delete(node, val)
+            if node is not None:
+                node.height = 1 + max(self.height(node.left), self.height(node.right))
+                return self.balance(node)
+
+        _delete(self.root, val)
 
     def balance(self, node: AVLNode):
         # Right subtree is too long
@@ -88,7 +93,7 @@ class AVLTree(RecursiveBST):
         if temp:
             temp.parent = x
 
-        if y.parent is None: # x was a root
+        if y.parent is None:  # x was a root
             self.root = y
 
         x.height = 1 + max(self.height(x.left), self.height(x.right))
@@ -114,7 +119,7 @@ class AVLTree(RecursiveBST):
         if temp:
             temp.parent = x
 
-        if y.parent is None: # x was a root
+        if y.parent is None:  # x was a root
             self.root = y
 
         x.height = 1 + max(self.height(x.left), self.height(x.right))
