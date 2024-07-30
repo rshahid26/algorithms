@@ -23,10 +23,12 @@ class OSTree(AVLTree):
             return
         
         super().append(val)
+        # TODO: Update sizes of nodes that rotate during insertion 
         self._update_size(self.root, val)
         
     def delete(self, val) -> None:
         super().delete(val)
+        # TODO: Update sizes of nodes that rotate during insertion 
         self._update_size(self.root, val)
     
     def _update_size(self, node, val):
